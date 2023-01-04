@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     "health_check.storage",
     "health_check.contrib.migrations",
     "health_check.contrib.redis",
+    "storages",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -50,6 +51,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "shop.apps.ShopConfig",
     "bot.apps.BotConfig",
+    "users.apps.UsersConfig",
 ]
 
 MIDDLEWARE = [
@@ -64,6 +66,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "mboma.urls"
+
+AUTH_USER_MODEL = "users.User"
 
 TEMPLATES = [
     {
@@ -141,6 +145,8 @@ STATIC_URL = "/static/"
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/media/"
+
+from .conf import *
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

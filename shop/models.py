@@ -27,14 +27,8 @@ class ProductCategory(SoftDeleteModel):
         verbose_name_plural = "Product Categories"
         table_prefix = "cat"
 
-
-class ProductInventory(SoftDeleteModel):
-    quantity = models.IntegerField(default=0)
-
-    class Meta:
-        verbose_name = "Product Inventory"
-        verbose_name_plural = "Product Inventories"
-        table_prefix = "inv"
+    def __str__(self):
+        return self.name
 
 
 class Product(SoftDeleteModel):
@@ -45,14 +39,29 @@ class Product(SoftDeleteModel):
     )
     SKU = models.CharField(max_length=50, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
-    inventory = models.OneToOneField(
-        ProductInventory, on_delete=models.CASCADE, related_name="product"
-    )
 
     class Meta:
         verbose_name = "Product"
         verbose_name_plural = "Products"
         table_prefix = "prod"
+
+    def __str__(self):
+        return self.name
+
+
+class ProductInventory(SoftDeleteModel):
+    quantity = models.IntegerField(default=0)
+    product = models.OneToOneField(
+        Product, on_delete=models.CASCADE, related_name="product"
+    )
+
+    class Meta:
+        verbose_name = "Product Inventory"
+        verbose_name_plural = "Product Inventories"
+        table_prefix = "inv"
+
+    def __str__(self):
+        return self.product.name
 
 
 class Discount(SoftDeleteModel):
@@ -68,3 +77,6 @@ class Discount(SoftDeleteModel):
         verbose_name = "Discount"
         verbose_name_plural = "Discounts"
         table_prefix = "disc"
+
+    def __str__(self):
+        return f"Discount - {self.name} - {self.product.name}"
