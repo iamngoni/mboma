@@ -77,6 +77,11 @@ class User(AbstractUser):
         user.save()
         return user
 
+    @classmethod
+    def get_user_by_phone_number(cls, phone_number):
+        user = cls.objects.filter(phone_number=phone_number).first()
+        return user
+
     def update_registration(self, data):
         self.first_name = data.get("first_name")
         self.last_name = data.get("last_name")
