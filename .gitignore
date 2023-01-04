@@ -1,0 +1,13 @@
+env/
+*/migrations/*
+.env
+*.pyc
+*~
+*.swp
+media/*
+application.log
+.idea/
+test.png
+*.lock
+*.log
+*.DS_Store
