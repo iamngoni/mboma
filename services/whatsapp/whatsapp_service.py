@@ -99,7 +99,27 @@ class WhatsappService:
         )
         if session:
             if session.stage == "menu":
-                return self.process_menu(session)
+                logger.info("processing menu")
+                self.process_menu(session)
+                return
+            else:
+                logger.error("stage not found")
+                session.stage = "menu"
+                session.position = "menu"
+                session.save()
+
+                payload = FormattedTextMessage(
+                    phone_number=self.formatted_message.get("from_phone_number"),
+                    text="Session probably expired. Please try again",
+                )
+                message = WhatsappMessage(payload=payload.to_json())
+                message.send()
+
+                # send menu
+                payload = self.get_shop_menu_payload()
+                message = WhatsappMessage(payload=payload.to_json())
+                message.send()
+                return
         else:
             logger.error("failed to get or create session")
             self.send_error_message()
@@ -259,10 +279,12 @@ class WhatsappService:
                         print("Session not created")
                         return self.send_error_message()
             else:
-                return self.send_error_message()
-        except Exception as e:
-            print(e)
-            return self.send_error_message()
+                self.send_error_message()
+                return
+        except Exception as exc:
+            logger.error(f"Error processing menu -> {exc}")
+            self.send_error_message()
+            return
 
     def process_registration(self, session):
         try:
