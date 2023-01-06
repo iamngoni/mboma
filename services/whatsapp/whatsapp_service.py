@@ -74,9 +74,7 @@ class WhatsappService:
 
     def process_text_message(self):
         session = WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
-            self.formatted_message["from_phone_number"],
-            "menu",
-            "menu"
+            self.formatted_message["from_phone_number"], "menu", "menu"
         )
         if session:
             logger.info("has session")
