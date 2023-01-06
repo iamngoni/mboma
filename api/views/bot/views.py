@@ -1,12 +1,11 @@
-from http.client import HTTPResponse
-
+from loguru import logger
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 
 from services.helpers.api_response import api_response
 from services.helpers.whatsapp import is_valid_message, format_message
 from services.whatsapp import WhatsappService
-from loguru import logger
+from django.shortcuts import HttpResponse
 
 
 class WebhookView(APIView):
@@ -32,10 +31,14 @@ class WebhookView(APIView):
         return api_response(request, data={"message": "received"})
 
     def get(self, request, *args, **kwargs):
-        form_data = request.query_params
-        mode = form_data.get("hub.mode")
-        token = form_data.get("hub.verify_token")
-        challenge = form_data.get("hub.challenge")
-        logger.info(f"mode: {mode}, token: {token}, challenge: {challenge}")
+        try:
+            form_data = request.query_params
+            mode = form_data.get("hub.mode")
+            token = form_data.get("hub.verify_token")
+            challenge = form_data.get("hub.challenge")
+            logger.info(f"mode: {mode}, token: {token}, challenge: {challenge}")
 
-        return HTTPResponse(challenge, 200)
+            return HttpResponse(challenge, 200)
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            return HttpResponse("Error", 500)
