@@ -122,8 +122,8 @@ class WhatsappService:
 
     def get_shop_menu_payload(self) -> FormattedInteractiveMessage:
         return FormattedInteractiveMessage(
-            header_text="Welcome to Mboma",
-            text="Hi, I'm ModestNerd. How can I help you?",
+            header_text="Welcome to Tregers Pvt Ltd",
+            text="Hi, I'm Mboma, Tregers' Quick Response Service. How can I help you?",
             phone_number=self.formatted_message.get("from_phone_number"),
             rows=[
                 InteractiveRow(
