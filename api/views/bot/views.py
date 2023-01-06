@@ -20,7 +20,9 @@ class WebhookView(APIView):
                 success, response, user_status, user = format_message(request.data)
                 if success:
                     logger.info(f"Formatted Data: {response, user_status}")
-                    service = WhatsappService(response, user_status, user=user)
+                    service = WhatsappService(
+                        formatted_message=response, is_registered=user_status, user=user
+                    )
                     service.process()
                     return api_response(request, data={"message": "received"})
                 pass

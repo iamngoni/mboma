@@ -7,8 +7,3 @@ from bot.models import WhatsappSession
 class UniversalAdmin(admin.ModelAdmin):
     def get_list_display(self, request):
         return [field.name for field in self.model._meta.concrete_fields]
-
-
-from django.contrib import admin
-
-# Register your models here.

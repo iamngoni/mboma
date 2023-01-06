@@ -4,7 +4,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from users.managers import UserManager
-from mboma.model import EnumModel
+from mboma.model import EnumModel, SoftDeleteModel
 from django.utils.translation import gettext_lazy as _
 from loguru import logger
 from django.contrib.auth.hashers import make_password, check_password
@@ -17,7 +17,7 @@ class UserRoles(EnumModel):
     CUSTOMER = "CUSTOMER", _("CUSTOMER")
 
 
-class User(AbstractUser):
+class User(SoftDeleteModel, AbstractUser):
     first_name = models.CharField(max_length=30, blank=False)
     last_name = models.CharField(max_length=30, blank=False)
     email = models.EmailField(unique=True)
