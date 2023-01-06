@@ -4,7 +4,7 @@ from decouple import config
 import requests
 
 
-@job("default", retry=3)
+@job("default")
 def mark_message_as_read(message_id: str):
     try:
         headers = {
@@ -28,4 +28,3 @@ def mark_message_as_read(message_id: str):
         logger.info(f"response from whatsapp -> {response.text}")
     except Exception as exc:
         logger.error(f"Error marking message as read: {exc}")
-        raise
