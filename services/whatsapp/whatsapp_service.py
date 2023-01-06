@@ -88,37 +88,24 @@ class WhatsappService:
                 return
 
     def process_text_message(self):
-        if self.formatted_message["message"].lower() in greeting_texts:
-            session = WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
-                self.formatted_message["from_phone_number"], "menu", "menu", {}
-            )
-            if session:
-                session.reset_to_menu()
-                payload = self.get_shop_menu_payload()
-                message = WhatsappMessage(payload=payload.to_json())
-                message.send()
-                return
+        session = WhatsappSession.get_whatsapp_session(
+            self.formatted_message["from_phone_number"]
+        )
+        if session:
+            if session.stage == "registration":
+                return self.process_registration(session)
+            elif session.stage == "menu":
+                return self.process_menu(session)
             else:
-                self.send_error_message()
-                return
+                payload = Utils.get_menu(
+                    self.formatted_message, f"Welcome Back, {self.full_name}"
+                )
+                message = WhatsappMessage(payload=payload)
+                return message.send()
         else:
-            session = WhatsappSession.get_whatsapp_session(
-                self.formatted_message["from_phone_number"]
-            )
-            if session:
-                if session.stage == "registration":
-                    return self.process_registration(session)
-                elif session.stage == "menu":
-                    return self.process_menu(session)
-                else:
-                    payload = Utils.get_menu(
-                        self.formatted_message, f"Welcome Back, {self.full_name}"
-                    )
-                    message = WhatsappMessage(payload=payload)
-                    return message.send()
-            else:
-                logger.error("Session not created")
-                return self.send_error_message()
+            logger.error("Session not created")
+            self.send_greeting_message()
+            self.register_user()
 
     def get_shop_menu_payload(self) -> FormattedInteractiveMessage:
         return FormattedInteractiveMessage(
@@ -159,8 +146,8 @@ class WhatsappService:
         payload = FormattedTemplateMessage(
             data=formatted_message,
             image_url=config("WHATSAPP_GREETING_IMAGE"),
-            text=f"Welcome {formatted_message.get('whatsapp_name')}, we're glad to have you here. Please wait while "
-            f"we get you started",
+            text="Welcome to Tregers, we're glad to have you here. Please wait while "
+            "we get you started",
         )
         whatsapp = WhatsappMessage(payload=payload.to_json())
         return whatsapp.send()
