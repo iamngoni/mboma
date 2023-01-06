@@ -2,6 +2,8 @@ from django.http import JsonResponse
 from loguru import logger
 from rest_framework.utils.serializer_helpers import ReturnDict
 
+from shop.models import ApiRequest
+
 
 def status_meaning(status: int) -> dict:
     meaning = {
@@ -58,6 +60,7 @@ def api_response(
     issues=None,
     message: str = None,
 ) -> JsonResponse:
+    logger.debug("preparing response")
     if message is None:
         message = status_meaning(num_status).get("meaning")
 

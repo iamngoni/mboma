@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from services.helpers.api_response import api_response
 from services.helpers.whatsapp import is_valid_message, format_message
 from services.whatsapp import WhatsappService
+from loguru import logger
 
 
 class WebhookView(APIView):
@@ -35,5 +36,6 @@ class WebhookView(APIView):
         mode = form_data.get("hub.mode")
         token = form_data.get("hub.verify_token")
         challenge = form_data.get("hub.challenge")
-        print(mode, token, challenge)
+        logger.info(mode, token, challenge)
+
         return HTTPResponse(challenge, 200)
