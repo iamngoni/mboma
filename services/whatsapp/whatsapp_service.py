@@ -31,13 +31,18 @@ class WhatsappService:
     def process(self):
         # mark incoming message as read
         try:
+            logger.info("scheduling job to mark message as read")
             mark_message_as_read.delay(self.formatted_message.get("message_id"))
+            logger.info("job scheduled")
 
             if self.is_registered:
+                logger.info("user is registered")
                 if self.formatted_message["message_type"] == "text":
+                    logger.info("processing text message")
                     # process text message
                     return self.process_text_message()
                 else:
+                    logger.error("failed to determine type of message")
                     payload = FormattedTextMessage(
                         text="Invalid Response. Try again",
                         phone_number=self.formatted_message.get("from_phone_number"),
@@ -45,7 +50,7 @@ class WhatsappService:
                     message = WhatsappMessage(payload=payload.to_json())
                     message.send()
             else:
-                logger.info(f"User not registered. Creating user and new session")
+                logger.info("user not registered. Creating user and new session")
                 user = User.create_user(
                     username=self.formatted_message["from_phone_number"],
                     first_name=self.formatted_message["from_phone_number"],
