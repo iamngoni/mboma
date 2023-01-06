@@ -142,10 +142,9 @@ class WhatsappService:
             ],
         )
 
-    @staticmethod
-    def send_greeting_message(formatted_message):
+    def send_greeting_message(self):
         payload = FormattedTemplateMessage(
-            data=formatted_message,
+            data=self.formatted_message,
             image_url=config("WHATSAPP_GREETING_IMAGE"),
             text="Welcome to Tregers, we're glad to have you here. Please wait while "
             "we get you started",
