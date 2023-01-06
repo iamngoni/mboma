@@ -4,6 +4,8 @@ from loguru import logger
 
 from api.views.bot.tasks import mark_message_as_read
 from bot.models import WhatsappSession
+from services.helpers.create_username import create_username
+from services.helpers.generate_random_password import generate_random_password
 from services.helpers.utils import Utils
 from services.whatsapp.interactive_row import InteractiveRow
 from services.whatsapp.messages import (
@@ -50,55 +52,15 @@ class WhatsappService:
                     message = WhatsappMessage(payload=payload.to_json())
                     message.send()
             else:
-                logger.info("user not registered. Creating user and new session")
-                user = User.create_user(
-                    username=self.formatted_message["from_phone_number"],
-                    first_name=self.formatted_message["from_phone_number"],
-                    last_name=self.formatted_message["whatsapp_name"],
-                    email=f"{self.formatted_message['from_phone_number']}@modestnerd.co",
-                    phone_number=self.formatted_message["from_phone_number"],
-                    role=UserRoles.CUSTOMER,
-                    source="bot",
-                )
-                if user:
-                    try:
-                        WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
-                            self.formatted_message["from_phone_number"],
-                            "greeting",
-                            "greeting",
-                            payload={},
-                        )
-
-                        user.has_session = True
-                        user.save()
-                    except Exception as exc:
-                        logger.error(f"Error creating session: {exc}")
-                        payload = FormattedTextMessage(
-                            text="Error creating session. Try again",
-                            phone_number=self.formatted_message.get(
-                                "from_phone_number"
-                            ),
-                        )
-                        message = WhatsappMessage(payload=payload.to_json())
-                        message.send()
-                        return
-
-                    self.send_greeting_message()
-                else:
-                    logger.error(f"Error creating user: {user}")
-                    payload = FormattedTextMessage(
-                        text="Error creating user",
-                        phone_number=self.formatted_message.get("from_phone_number"),
-                    )
-                    message = WhatsappMessage(payload=payload.to_json())
-                    message.send()
-                    return
+                logger.info("user is not registered")
+                self.send_greeting_message()
+                self.register_user()
         except Exception as exc:
             logger.error(f"Failed to process incoming message -> {exc}")
             return
 
     def process_text_message(self):
-        session = WhatsappSession.get_whatsapp_session(
+        session = WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
             self.formatted_message["from_phone_number"]
         )
         if session:
@@ -112,11 +74,12 @@ class WhatsappService:
                     self.formatted_message, f"Welcome Back, {self.full_name}"
                 )
                 message = WhatsappMessage(payload=payload)
-                return message.send()
+                message.send()
+                return
         else:
-            logger.error("Session not created")
-            self.send_greeting_message()
-            self.register_user()
+            logger.error("failed to get or create session")
+            self.send_error_message()
+            return
 
     def get_shop_menu_payload(self) -> FormattedInteractiveMessage:
         return FormattedInteractiveMessage(
@@ -321,12 +284,41 @@ class WhatsappService:
                         return
 
                 session.payload["email_address"] = self.formatted_message["message"]
-                session.position = "industry"
+                session.position = "menu"
                 session.save()
 
+                # generate password
+                password = generate_random_password()
+
+                # generate username
+                username = create_username(
+                    first_name=session.payload.get("first_name"),
+                    last_name=session.payload.get("last_name"),
+                )
+
+                # create user using details saved in session object
+                User.create_user(
+                    username=username,
+                    first_name=session.payload.get("first_name"),
+                    last_name=session.payload.get("last_name"),
+                    email=session.payload.get("email_address"),
+                    phone_number=self.formatted_message.get("from_phone_number"),
+                    role=UserRoles.CUSTOMER,
+                    source="bot",
+                    password=password,
+                )
+
+                # notify user that account has been created successfully
+                payload = FormattedTextMessage(
+                    phone_number=self.formatted_message.get("from_phone_number"),
+                    text=f"An account with your details has been successfully created. Your temporary password is *{password}*.\n\nPlease try to remember the password for future use.",
+                )
+                message = WhatsappMessage(payload=payload.to_json())
+                message.send()
+
                 payload = self.get_shop_menu_payload()
-                whatsapp = WhatsappMessage(payload=payload.to_json())
-                whatsapp.send()
+                message = WhatsappMessage(payload=payload.to_json())
+                message.send()
                 return
             else:
                 self.send_error_message()

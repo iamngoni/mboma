@@ -14,7 +14,9 @@ system_port = config("EMAIL_PORT")
 system_password = config("EMAIL_PASSWORD")
 
 
-def send_email(email: str, html_content: str, email_subject: str = "Mboma"):
+def send_email(
+    email: str, message: str, email_subject: str = "Mboma | Tregers Project"
+):
 
     logger.info(f"[Send Email]: Sending email to {email}")
 
@@ -22,11 +24,11 @@ def send_email(email: str, html_content: str, email_subject: str = "Mboma"):
     server = smtplib.SMTP(host=system_host, port=system_port)
 
     email_message = MIMEMultipart()
-    email_message["From"] = str(Header(f"Hekima Therapists <{system_email}>"))
+    email_message["From"] = str(Header(f"Mboma | Tregers Project <{system_email}>"))
     email_message["To"] = email
     email_message["Subject"] = email_subject
 
-    email_message.attach(MIMEText(html_content, "html"))
+    email_message.attach(MIMEText(message, "plain"))
     email_content = email_message.as_string()
 
     try:
