@@ -1,13 +1,9 @@
-import json
 import re
-from io import BytesIO
 
-import requests
-from decouple import config
-from django.core.files.uploadedfile import InMemoryUploadedFile
+from loguru import logger
 
+from api.views.bot.tasks import mark_message_as_read
 from bot.models import WhatsappSession
-from services.helpers.greeting_texts import greeting_texts
 from services.helpers.utils import Utils
 from services.whatsapp.interactive_row import InteractiveRow
 from services.whatsapp.messages import (
@@ -18,7 +14,6 @@ from services.whatsapp.messages import (
 )
 from services.whatsapp.whatsapp_message import WhatsappMessage
 from users.models import User, UserRoles
-from loguru import logger
 
 
 class WhatsappService:
@@ -34,6 +29,7 @@ class WhatsappService:
         )
 
     def process(self):
+        mark_message_as_read.delay(self.formatted_message.get("message_id"))
         if self.is_registered:
             if self.formatted_message["message_type"] == "text":
                 # process text message
@@ -144,13 +140,12 @@ class WhatsappService:
         )
 
     def send_greeting_message(self):
-
-        payload = FormattedImageMessage(
+        image_payload = FormattedImageMessage(
             phone_number=self.formatted_message.get("from_phone_number"),
             image_url="https://www.tregerproducts.com/wp-content/uploads/treger-products-logo.jpg",
         )
-        message = WhatsappMessage(payload=payload.to_json())
-        message.send()
+        image_message = WhatsappMessage(payload=image_payload.to_json())
+        image_message.send()
 
         payload = FormattedTextMessage(
             phone_number=self.formatted_message.get("from_phone_number"),
@@ -159,7 +154,6 @@ class WhatsappService:
         )
         message = WhatsappMessage(payload=payload.to_json())
         message.send()
-
         return
 
     def send_error_message(self):
