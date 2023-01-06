@@ -1,6 +1,7 @@
 from django.db import models
 
 from mboma.model import SoftDeleteModel
+from loguru import logger
 
 
 class WhatsappSession(SoftDeleteModel):
@@ -25,19 +26,22 @@ class WhatsappSession(SoftDeleteModel):
         cls, phone_number, stage, position, payload=None
     ):
         whatsapp_session = cls.objects.filter(phone_number=phone_number).first()
+
         if whatsapp_session:
-            whatsapp_session.stage = stage
-            whatsapp_session.position = position
-            whatsapp_session.payload = payload
-            whatsapp_session.save()
+            logger.info(
+                f"Whatsapp session exists: {whatsapp_session}. Updating session"
+            )
+            cls.update_whatsapp_session(phone_number, stage, position, payload)
             return whatsapp_session
         else:
-            whatsapp_session = cls.objects.create(
+            whatsapp_session = cls(
                 phone_number=phone_number,
                 stage=stage,
                 position=position,
                 payload=payload,
             )
+            whatsapp_session.save()
+
             return whatsapp_session
 
     @classmethod

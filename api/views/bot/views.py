@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 
 from services.helpers.api_response import api_response
 from services.helpers.whatsapp import is_valid_message, format_message
-from services.whatsapp import WhatsappService
+from services.whatsapp.whatsapp_service import WhatsappService
 from django.shortcuts import HttpResponse
 
 
