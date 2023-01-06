@@ -76,7 +76,7 @@ class WhatsappService:
                     message.send()
                     return
 
-                self.send_greeting_message(self.formatted_message)
+                self.send_greeting_message()
             else:
                 logger.error(f"Error creating user: {user}")
                 payload = FormattedTextMessage(
@@ -92,6 +92,7 @@ class WhatsappService:
             self.formatted_message["from_phone_number"]
         )
         if session:
+            logger.info("has session")
             if session.stage == "registration":
                 return self.process_registration(session)
             elif session.stage == "menu":
@@ -149,8 +150,9 @@ class WhatsappService:
             text="Welcome to Tregers, we're glad to have you here. Please wait while "
             "we get you started",
         )
-        whatsapp = WhatsappMessage(payload=payload.to_json())
-        return whatsapp.send()
+        message = WhatsappMessage(payload=payload.to_json())
+        message.send()
+        return
 
     def send_error_message(self):
         payload = FormattedTemplateMessage(
@@ -169,10 +171,11 @@ class WhatsappService:
                 text="Lets get to know each other, please enter your first name...",
                 phone_number=self.formatted_message.get("from_phone_number"),
             )
-            whatsapp = WhatsappMessage(payload=payload.to_json())
-            return whatsapp.send()
+            message = WhatsappMessage(payload=payload.to_json())
+            message.send()
         else:
-            return self.send_error_message()
+            self.send_error_message()
+            return
 
     def process_menu(self, session):
         try:
