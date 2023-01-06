@@ -95,7 +95,7 @@ class WhatsappService:
             return
 
     def process_interactive_message(self):
-        session = WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
+        session = WhatsappSession.get_whatsapp_session(
             self.formatted_message["from_phone_number"]
         )
         if session:
