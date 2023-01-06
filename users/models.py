@@ -30,7 +30,6 @@ class User(SoftDeleteModel, AbstractUser):
         choices=UserRoles.choices,
     )
     source = models.CharField(max_length=255, blank=True, null=True)
-    is_registered = models.BooleanField(default=False)
     has_session = models.BooleanField(default=False)
     password_history = models.TextField(blank=True, null=True, editable=False)
     password_updated_at = models.DateTimeField(blank=True, null=True)

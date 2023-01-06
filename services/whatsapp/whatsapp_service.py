@@ -205,7 +205,8 @@ class WhatsappService:
     def process_menu(self, session):
         try:
             if session.position == "menu":
-                if self.user.is_registered:
+                logger.info(f"session position -> {session.position}")
+                if self.is_registered:
                     menu_item_id = self.formatted_message["list_reply"]["id"]
                     if menu_item_id == "1":
                         session.stage = "products"
@@ -265,7 +266,7 @@ class WhatsappService:
                     else:
                         return self.send_error_message()
                 else:
-                    print("User not registered")
+                    logger.info("User not registered")
                     session = (
                         WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
                             self.formatted_message["from_phone_number"],
@@ -275,13 +276,13 @@ class WhatsappService:
                         )
                     )
                     if session:
-                        payload = Utils.get_first_name(self.formatted_message)
-                        whatsapp = WhatsappMessage(payload=payload)
-                        return whatsapp.send()
+                        self.register_user()
+                        return
                     else:
-                        print("Session not created")
+                        logger.error("Session not created")
                         return self.send_error_message()
             else:
+                logger.error("Invalid session position")
                 self.send_error_message()
                 return
         except Exception as exc:
