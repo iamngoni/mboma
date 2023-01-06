@@ -228,7 +228,7 @@ class WhatsappService:
                         ]
 
                         session.payload["categories"] = [
-                            row.to_json() for row in self.rows
+                            row.to_json() for row in rows
                         ]
                         session.save()
 
@@ -306,7 +306,9 @@ class WhatsappService:
             menu_item_id = self.formatted_message["list_reply"]["id"]
             categories = session.payload.get("categories")
             logger.info(f"Categories in session -> {categories}")
-            category = filter(lambda category: category.get("id") == menu_item_id, categories).first()
+            category = filter(
+                lambda category: category.get("id") == menu_item_id, categories
+            ).first()
             logger.info(f"Category -> {category}")
             products = Product.objects.filter(category__name=category.get("title"))
             logger.info(f"Products -> {products}")
@@ -319,17 +321,13 @@ class WhatsappService:
                 for index, product in enumerate(products)
             ]
 
-            session.payload["products"] = [
-                row.to_json() for row in self.rows
-            ]
+            session.payload["products"] = [row.to_json() for row in rows]
             session.save()
 
             payload = FormattedInteractiveMessage(
                 header_text="Tregers Products",
                 text="Choose Product To Retrieve More Information",
-                phone_number=self.formatted_message.get(
-                    "from_phone_number"
-                ),
+                phone_number=self.formatted_message.get("from_phone_number"),
                 section_text="Products",
                 rows=rows,
             )
