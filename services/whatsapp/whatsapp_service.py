@@ -14,6 +14,7 @@ from services.whatsapp.messages import (
     FormattedTemplateMessage,
     FormattedTextMessage,
     FormattedInteractiveMessage,
+    FormattedImageMessage,
 )
 from services.whatsapp.whatsapp_message import WhatsappMessage
 from users.models import User, UserRoles
@@ -143,14 +144,22 @@ class WhatsappService:
         )
 
     def send_greeting_message(self):
-        payload = FormattedTemplateMessage(
-            data=self.formatted_message,
-            image_url=config("WHATSAPP_GREETING_IMAGE"),
+
+        payload = FormattedImageMessage(
+            phone_number=self.formatted_message.get("from_phone_number"),
+            image_url="https://www.tregerproducts.com/wp-content/uploads/treger-products-logo.jpg",
+        )
+        message = WhatsappMessage(payload=payload.to_json())
+        message.send()
+
+        payload = FormattedTextMessage(
+            phone_number=self.formatted_message.get("from_phone_number"),
             text="Welcome to Tregers, we're glad to have you here. Please wait while "
             "we get you started",
         )
         message = WhatsappMessage(payload=payload.to_json())
         message.send()
+
         return
 
     def send_error_message(self):
