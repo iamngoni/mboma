@@ -417,7 +417,7 @@ class WhatsappService:
                 session.position = "industry"
                 session.save()
 
-                payload = Utils.get_menu(self.formatted_message)
+                payload = Utils.get_menu(self.formatted_message, self.formatted_message)
                 whatsapp = WhatsappMessage(payload=payload)
                 return whatsapp.send_message()
             else:
