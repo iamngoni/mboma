@@ -36,6 +36,6 @@ class WebhookView(APIView):
         mode = form_data.get("hub.mode")
         token = form_data.get("hub.verify_token")
         challenge = form_data.get("hub.challenge")
-        logger.info(mode, token, challenge)
+        logger.info(f"mode: {mode}, token: {token}, challenge: {challenge}")
 
         return HTTPResponse(challenge, 200)
