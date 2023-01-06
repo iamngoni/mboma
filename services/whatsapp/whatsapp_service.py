@@ -311,7 +311,8 @@ class WhatsappService:
                 # notify user that account has been created successfully
                 payload = FormattedTextMessage(
                     phone_number=self.formatted_message.get("from_phone_number"),
-                    text=f"An account with your details has been successfully created. Your temporary password is *{password}*.\n\nPlease try to remember the password for future use.",
+                    text=f"An account with your details has been successfully created. Your temporary password is "
+                    f"*{password}*.\n\nPlease try to remember the password for future use.",
                 )
                 message = WhatsappMessage(payload=payload.to_json())
                 message.send()
