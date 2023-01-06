@@ -1,10 +1,11 @@
 from django_rq import job
+from rq import Retry
 from loguru import logger
 from decouple import config
 import requests
 
 
-@job("default")
+@job("default", retry=Retry(max=3))
 def mark_message_as_read(message_id: str):
     try:
         headers = {
