@@ -9,6 +9,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from bot.models import WhatsappSession
 from services.helpers.utils import Utils
 from users.models import User
+from loguru import logger
 
 
 class WhatsappService:
@@ -559,7 +560,7 @@ class WhatsappService:
             else:
                 return self.generic_error()
         except Exception as e:
-            print(e)
+            logger.error(e)
             return self.generic_error()
 
 

@@ -14,20 +14,21 @@ class WebhookView(APIView):
     # This webhook is for whatsapp cloud api
     def post(self, request):
         try:
-            print("INCOMING DATA:", request.data)
+            logger.info(f"INCOMING DATA: {request.data}")
             valid = is_valid_message(request.data)
             if valid:
                 success, response, user_status, user = format_message(request.data)
                 if success:
-                    print("Formatted Data", response, user_status)
+                    logger.info(f"Formatted Data: {response, user_status}")
                     service = WhatsappService(response, user_status, user=user)
                     service.process()
                     return api_response(request, data={"message": "received"})
                 pass
             else:
-                print("INVALID MESSAGE")
+                logger.info("INVALID MESSAGE")
         except Exception as e:
-            print("Failed to action => error", e)
+            logger.info(f"Failed to action => {e}")
+
         return api_response(request, data={"message": "received"})
 
     def get(self, request, *args, **kwargs):
