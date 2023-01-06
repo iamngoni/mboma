@@ -58,7 +58,8 @@ class WhatsappService:
                     self.formatted_message.get("from_phone_number")
                 )
                 if session and session.stage == "registration":
-                    self.process_registration()
+                    self.process_registration(session)
+                    return
 
                 self.send_greeting_message()
                 self.register_user()
