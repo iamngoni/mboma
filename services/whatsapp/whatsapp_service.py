@@ -105,6 +105,10 @@ class WhatsappService:
                 logger.info("processing menu")
                 self.process_menu(session)
                 return
+            elif session.stage == "products":
+                if session.position == "categories":
+                    self.process_products_categories_menu(session)
+                    return
             else:
                 logger.error("stage not found")
                 session.stage = "menu"
@@ -214,6 +218,18 @@ class WhatsappService:
                         session.save()
 
                         categories = ProductCategory.objects.all()
+                        rows = [
+                                InteractiveRow(
+                                    id=index,
+                                    title=category.name,
+                                    description=category.description,
+                                )
+                                for index, category in enumerate(categories)
+                            ]
+
+                        session.payload["categories"] = [row.to_json() for row in self.rows]
+                        session.save()
+
                         payload = FormattedInteractiveMessage(
                             header_text="Tregers Products",
                             text="Choose Product Category To Retrieve Products",
@@ -221,14 +237,7 @@ class WhatsappService:
                                 "from_phone_number"
                             ),
                             section_text="Product Categories",
-                            rows=[
-                                InteractiveRow(
-                                    id=index,
-                                    title=category.name,
-                                    description=category.description,
-                                )
-                                for index, category in enumerate(categories)
-                            ],
+                            rows=rows,
                         )
 
                         message = WhatsappMessage(payload=payload.to_json())
@@ -285,6 +294,15 @@ class WhatsappService:
                 logger.error("Invalid session position")
                 self.send_error_message()
                 return
+        except Exception as exc:
+            logger.error(f"Error processing menu -> {exc}")
+            self.send_error_message()
+            return
+
+    def process_products_categories_menu(self, session):
+        try:
+            menu_item_id = self.formatted_message["list_reply"]["id"]
+
         except Exception as exc:
             logger.error(f"Error processing menu -> {exc}")
             self.send_error_message()
