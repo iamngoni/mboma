@@ -219,15 +219,17 @@ class WhatsappService:
 
                         categories = ProductCategory.objects.all()
                         rows = [
-                                InteractiveRow(
-                                    id=index,
-                                    title=category.name,
-                                    description=category.description,
-                                )
-                                for index, category in enumerate(categories)
-                            ]
+                            InteractiveRow(
+                                id=index,
+                                title=category.name,
+                                description=category.description,
+                            )
+                            for index, category in enumerate(categories)
+                        ]
 
-                        session.payload["categories"] = [row.to_json() for row in self.rows]
+                        session.payload["categories"] = [
+                            row.to_json() for row in self.rows
+                        ]
                         session.save()
 
                         payload = FormattedInteractiveMessage(
@@ -302,6 +304,39 @@ class WhatsappService:
     def process_products_categories_menu(self, session):
         try:
             menu_item_id = self.formatted_message["list_reply"]["id"]
+            categories = session.payload.get("categories")
+            logger.info(f"Categories in session -> {categories}")
+            category = filter(lambda category: category.get("id") == menu_item_id, categories).first()
+            logger.info(f"Category -> {category}")
+            products = Product.objects.filter(category__name=category.get("title"))
+            logger.info(f"Products -> {products}")
+            rows = [
+                InteractiveRow(
+                    id=index,
+                    title=product.name,
+                    description=product.description,
+                )
+                for index, product in enumerate(products)
+            ]
+
+            session.payload["products"] = [
+                row.to_json() for row in self.rows
+            ]
+            session.save()
+
+            payload = FormattedInteractiveMessage(
+                header_text="Tregers Products",
+                text="Choose Product To Retrieve More Information",
+                phone_number=self.formatted_message.get(
+                    "from_phone_number"
+                ),
+                section_text="Products",
+                rows=rows,
+            )
+
+            message = WhatsappMessage(payload=payload.to_json())
+            message.send()
+            return
 
         except Exception as exc:
             logger.error(f"Error processing menu -> {exc}")
