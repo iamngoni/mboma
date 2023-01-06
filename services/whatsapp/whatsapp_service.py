@@ -73,7 +73,7 @@ class WhatsappService:
             return
 
     def process_text_message(self):
-        session = WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
+        session = WhatsappSession.get_whatsapp_session(
             self.formatted_message["from_phone_number"]
         )
         if session:
@@ -227,9 +227,7 @@ class WhatsappService:
                             for index, category in enumerate(categories)
                         ]
 
-                        session.payload["categories"] = [
-                            row.to_json() for row in rows
-                        ]
+                        session.payload["categories"] = [row.to_json() for row in rows]
                         session.save()
 
                         payload = FormattedInteractiveMessage(
