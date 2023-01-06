@@ -211,6 +211,6 @@ CHANNEL_LAYERS = {
     },
 }
 
-logger.add(sys.stdout, colorize=True, level="INFO")
-logger.add(sys.stderr, colorize=True, backtrace=True, diagnose=True)
+logger.add(sys.stdout, colorize=True, level="INFO", backtrace=True, diagnose=True)
+logger.add(sys.stderr, colorize=True, level="ERROR", backtrace=True, diagnose=True)
 logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)

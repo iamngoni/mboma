@@ -91,4 +91,5 @@ def api_response(
         "versioned_by": "ModestNerds, Co",
     }
 
+    logger.info(f"response: {response}")
     return JsonResponse(status=num_status, data=response)
