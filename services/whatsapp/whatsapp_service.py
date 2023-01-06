@@ -98,6 +98,8 @@ class WhatsappService:
             self.formatted_message["from_phone_number"]
         )
         if session:
+            logger.info("session found")
+            logger.info(f"session stage -> {session.stage}")
             if session.stage == "menu":
                 logger.info("processing menu")
                 self.process_menu(session)
