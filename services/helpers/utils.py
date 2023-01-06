@@ -6,59 +6,67 @@ class Utils:
     def __init__(self):
         pass
 
-    def get_coming_soon(data):
+    def get_coming_soon(self, data):
         return Utils.generic_message(
+            self,
             data,
             "🙁*Apologies*\n\nThis feature is coming soon...",
         )
 
-    def get_invalid_response(data):
+    def get_invalid_response(self, data):
         return Utils.generic_message(
+            self,
             data,
             "🙁*Invalid*\n\nSorry i could not understand your response, say _*hie*_ to start "
             "afresh",
         )
 
-    def get_invalid_email(data):
+    def get_invalid_email(self, data):
         return Utils.generic_message(
+            self,
             data,
             "🙁*Invalid*\n\nSorry your email address is invalid, please try again or enter _*None*_...",
         )
 
-    def get_not_registered(data):
+    def get_not_registered(self, data):
         return Utils.generic_message(
+            self,
             data,
             "You are not registered, please register first\n\nLets get to know each other, please enter your first "
             "name...",
         )
 
-    def get_generic_update_question(data, message):
-        return Utils.generic_message(data, message)
+    def get_generic_update_question(self, data, message):
+        return Utils.generic_message(self, data, message)
 
-    def get_first_name(data):
+    def get_first_name(self, data):
         return Utils.generic_message(
+            self,
             data,
             "Lets get to know each other, please enter your first name...",
         )
 
-    def get_last_name(data):
-        return Utils.generic_message(data, "Please enter your last name...")
+    def get_last_name(self, data):
+        return Utils.generic_message(self, data, "Please enter your last name...")
 
-    def get_email_address(data):
+    def get_email_address(self, data):
         return Utils.generic_message(
+            self,
             data,
             "For communication and information updates enter your email address\nIf you do not have an email enter _*None*_\n\nPlease note that your email address will not be shared with any third party...",
         )
 
-    def get_successful_registration(data):
+    def get_successful_registration(self, data):
         return Utils.generic_message(
-            data, "Thank you for registering with Victory Milestone\n\n"
+            self, data, "Thank you for registering with Victory Milestone\n\n"
         )
 
-    def get_profile_picture(data):
-        return Utils.generic_message(data, "Please select a picture of yourself...")
+    def get_profile_picture(self, data):
+        return Utils.generic_message(
+            self, data, "Please select a picture of yourself..."
+        )
 
-    def get_greeting_message(data):
+    def get_greeting_message(self, data):
         return {
             "messaging_product": "whatsapp",
             "to": data["from_phone_number"],
@@ -104,7 +112,7 @@ class Utils:
             },
         }
 
-    def generic_message(data, message):
+    def generic_message(self, data, message):
         return {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -115,21 +123,21 @@ class Utils:
             },
         }
 
-    def get_menu(data, message):
+    def get_menu(self, data, message):
         body = """What would you like to do next?"""
-        return Utils.get_menu_action(data, message, body)
+        return Utils.get_menu_action(self, data, message, body)
 
-    def get_about_us(data):
+    def get_about_us(self, data):
         message = "📃 About Us\nVictory Milestone recruitment agency"
         body = """_*Who we are*_\n\nWe are a leading recruitment agency that aims at providing the best services to companies and job seekers\n\n_*What we do*_\n\n📌Human Resource solutions\n📌Recruitment and Training Services\n📌Job Placement and Salary Negotiations\n📌Insurance Services (Medical, Funeral, Business, All Risk)\n\n*Click on button below to browse*⬇⬇⬇"""
-        return Utils.get_menu_action(data, message, body)
+        return Utils.get_menu_action(self, data, message, body)
 
-    def get_contact_us(data):
+    def get_contact_us(self, data):
         message = "📃 Contact Us"
         body = """_*Contact Details*_\n\n📞Phone: +263 719156157\n📧Email:info@victorymilestone.co.zw\n🌐Website:www.victorymilestone.co.zw\n📍Address: 92C East Rd, Belgravia, Harare, Zimbabwe\n\n*Click on button below to browse*⬇⬇⬇"""
-        return Utils.get_menu_action(data, message, body)
+        return Utils.get_menu_action(self, data, message, body)
 
-    def get_menu_action(data, message, body):
+    def get_menu_action(self, data, message, body):
         return {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -187,12 +195,12 @@ class Utils:
             },
         }
 
-    def get_faq(data):
+    def get_faq(self, data):
         message = "📃 FAQs"
         body = """_*FAQs*_\n\n*1. What are the benefits of registering*\n\nOur agency is highly reputable, customer centric automotive recruitment agency, with an array of expertise at our disposal. We have in-depth market knowledge and fantastic network relations. We also manage your application and will liaise with the client on your behalf. Our agency can also give CV feedback, interview advice and negotiate salaries at offer stage.\n\n*Click on button below to browse*⬇⬇⬇"""
-        return Utils.get_menu_action(data, message, body)
+        return Utils.get_menu_action(self, data, message, body)
 
-    def get_document_type_client(data, document_types_list):
+    def get_document_type_client(self, data, document_types_list):
         return {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -209,13 +217,14 @@ class Utils:
             },
         }
 
-    def get_upload_document(data, document_type):
+    def get_upload_document(self, data, document_type):
         return Utils.generic_message(
+            self,
             data,
             f"📎Upload Document\n\nPlease select the *{document_type}* you would like to upload\n*Document should be in pdf/docx/jpg/jpeg formats*",
         )
 
-    def get_edit_field(data):
+    def get_edit_field(self, data):
         return {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -283,7 +292,7 @@ class Utils:
             },
         }
 
-    def get_industries(data, industries_list):
+    def get_industries(self, data, industries_list):
         return {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -300,7 +309,7 @@ class Utils:
             },
         }
 
-    def get_job_list(data, job_list):
+    def get_job_list(self, data, job_list):
         return {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -317,7 +326,7 @@ class Utils:
             },
         }
 
-    def get_application_confirmation(data, job_title):
+    def get_application_confirmation(self, data, job_title):
         return {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -349,10 +358,10 @@ class Utils:
             },
         }
 
-    def get_normal_response(data, message, body):
-        return Utils.get_menu_action(data, message, body)
+    def get_normal_response(self, data, message, body):
+        return Utils.get_menu_action(self, data, message, body)
 
-    def get_applications(data, applications_list):
+    def get_applications(self, data, applications_list):
         return {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -369,5 +378,5 @@ class Utils:
             },
         }
 
-    def get_application_details(data, application_details):
-        return Utils.generic_message(data, application_details)
+    def get_application_details(self, data, application_details):
+        return Utils.generic_message(self, data, application_details)

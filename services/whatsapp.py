@@ -1,16 +1,14 @@
-from io import BytesIO
-import re
-import sys
-from decouple import config
-import requests
 import json
-import datetime
-from bot.models import WhatsappSession
+import re
+from io import BytesIO
 
-
-from users.models import User
-
+import requests
+from decouple import config
 from django.core.files.uploadedfile import InMemoryUploadedFile
+
+from bot.models import WhatsappSession
+from services.helpers.utils import Utils
+from users.models import User
 
 
 class WhatsappService:
@@ -309,7 +307,8 @@ class WhatsappService:
                         session.stage = "uploads"
                         session.position = "document_type"
                         session.save()
-                        document_types = DocumentTypes.objects.all().order_by("id")
+                        # document_types = DocumentTypes.objects.all().order_by("id")
+                        document_types = []
                         document_types_list = []
                         for document_type in document_types:
                             document_types_list.append(
@@ -332,59 +331,6 @@ class WhatsappService:
                         payload = Utils.get_edit_field(self.formatted_message)
                         whatsapp = WhatsappMessage(payload=payload)
                         return whatsapp.send_message()
-
-                    elif self.formatted_message["list_reply"]["id"] == "3":
-                        session.stage = "browse_jobs"
-                        session.position = "industries"
-                        session.save()
-
-                        industries = Industry.objects.all()[0:10]
-                        industries_list = []
-                        for industry in industries:
-                            industries_list.append(
-                                {
-                                    "id": industry.id,
-                                    "title": industry.name[:23],
-                                    "description": industry.description,
-                                }
-                            )
-                        payload = Utils.get_industries(
-                            self.formatted_message, industries_list
-                        )
-                        whatsapp = WhatsappMessage(payload=payload)
-                        return whatsapp.send_message()
-
-                    elif self.formatted_message["list_reply"]["id"] == "4":
-                        session.stage = "applications"
-                        session.position = "all_applications"
-                        session.save()
-                        applications = Applications.objects.filter(
-                            applicant=self.client
-                        )[0:10]
-                        applications_list = []
-                        for application in applications:
-                            applications_list.append(
-                                {
-                                    "id": application.id,
-                                    "title": application.vacancy.title[:23],
-                                    "description": application.vacancy.description,
-                                }
-                            )
-                        if applications_list:
-                            payload = Utils.get_applications(
-                                self.formatted_message, applications_list
-                            )
-                            whatsapp = WhatsappMessage(payload=payload)
-                            return whatsapp.send_message()
-                        else:
-                            payload = Utils.get_normal_response(
-                                self.formatted_message,
-                                "📃 APPLICATIONS",
-                                "You have no applications at the moment",
-                            )
-                            whatsapp = WhatsappMessage(payload=payload)
-                            return whatsapp.send_message()
-
                     elif self.formatted_message["list_reply"]["id"] == "5":
                         session.stage = "menu"
                         session.position = "menu"
@@ -431,109 +377,6 @@ class WhatsappService:
             print(e)
             return self.generic_error()
 
-    def process_upload(self, session):
-        try:
-            if session.position == "document_type":
-                document_type = DocumentTypes.objects.get(
-                    id=self.formatted_message["list_reply"]["id"]
-                )
-                session.position = "upload"
-                session.payload = {"document_type": document_type.id}
-                session.save()
-                payload = Utils.get_upload_document(
-                    self.formatted_message, document_type.document_type
-                )
-                whatsapp = WhatsappMessage(payload=payload)
-                return whatsapp.send_message()
-
-            elif session.position == "upload":
-                # upload document
-                print("file uploaded")
-                # save document
-                headers = {
-                    "Authorization": f'Bearer {config("WHATSAPP_TOKEN")}',
-                    "Content-Type": "application/json",
-                }
-                file_request = requests.request(
-                    "GET",
-                    url=f"{config('WHATSAPP_URL')}{self.formatted_message['media_id']}/",
-                    headers=headers,
-                    data={},
-                )
-                print(">>>>", file_request)
-                print(">>>>", file_request.json())
-                if file_request.status_code == 200:
-                    print("file url obtained")
-                    # get media url
-                    url = file_request.json()["url"]
-                    # get file type
-                    mime_type = file_request.json()["mime_type"]
-                    sha256 = file_request.json()["sha256"]
-                    id = file_request.json()["id"]
-                    file_size = file_request.json()["file_size"]
-                else:
-                    print("file url not obtained")
-                    return self.generic_error()
-                # download file
-                payload = {}
-                headers = {"Authorization": f'Bearer {config("WHATSAPP_TOKEN")}'}
-                file = requests.request("GET", url, headers=headers, data=payload)
-                if file.status_code == 200:
-                    print("file downloaded")
-                    try:
-                        # check message type
-                        if self.formatted_message["message_type"] == "image":
-                            if mime_type == "image/jpeg":
-                                file_name = f"{id}.jpg"
-                            elif mime_type == "image/png":
-                                file_name = f"{id}.png"
-                            elif mime_type == "image/gif":
-                                file_name = f"{id}.gif"
-                            else:
-                                file_name = f"{id}.jpg"
-                        if self.formatted_message["message_type"] == "document":
-                            file_name = self.formatted_message["document"]["filename"]
-                        # convert to file on memory
-                        bytesio_o = BytesIO(file.content)
-                        obj = InMemoryUploadedFile(
-                            bytesio_o,
-                            None,
-                            file_name,
-                            mime_type,
-                            bytesio_o.getbuffer().nbytes,
-                            None,
-                        )
-                        document_type = DocumentTypes.objects.get(
-                            id=session.payload.get("document_type")
-                        )
-                        document = ClientDocuments.create_client_document(
-                            client=self.client, type=document_type, document=obj
-                        )
-                        if document:
-                            session.stage = "menu"
-                            session.position = "menu"
-                            session.save()
-                            payload = Utils.get_menu(
-                                self.formatted_message,
-                                f"Document uploaded successfully✅",
-                            )
-                            whatsapp = WhatsappMessage(payload=payload)
-                            whatsapp.send_message()
-                        else:
-                            return self.generic_error()
-                    except Exception as e:
-                        print("Failed to save file", e)
-                        return self.generic_error()
-                else:
-                    return self.generic_error()
-
-            else:
-                print("No")
-                return self.generic_error()
-        except Exception as e:
-            print(e)
-            return self.generic_error()
-
     def process_registration(self, session):
         try:
             if session.position == "name":
@@ -572,51 +415,10 @@ class WhatsappService:
                 session.payload["email_address"] = self.formatted_message["message"]
                 session.position = "industry"
                 session.save()
-                industries = Industry.objects.all()[0:10]
-                industries_list = []
-                for industry in industries:
-                    industries_list.append(
-                        {
-                            "id": industry.id,
-                            "title": industry.name[:23],
-                            "description": industry.description,
-                        }
-                    )
-                payload = Utils.get_industries(self.formatted_message, industries_list)
+
+                payload = Utils.get_menu(self.formatted_message)
                 whatsapp = WhatsappMessage(payload=payload)
                 return whatsapp.send_message()
-
-            elif session.position == "industry":
-                industry = Industry.objects.get(
-                    id=self.formatted_message["list_reply"]["id"]
-                )
-                session.payload["industry"] = industry.id
-                self.user.update_registration(session.payload)
-                # create client
-                client = Client.create_base_client(
-                    self.user.first_name,
-                    self.user.last_name,
-                    self.user.email,
-                    self.user.phone_number,
-                    industry,
-                )
-                client.save()
-                payload = Utils.get_successful_registration(self.formatted_message)
-                whatsapp = WhatsappMessage(payload=payload)
-                whatsapp.send_message()
-                show_menu = (
-                    WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
-                        self.formatted_message["from_phone_number"], "menu", "menu", {}
-                    )
-                )
-                if show_menu:
-                    payload = Utils.get_menu(
-                        self.formatted_message, "Continue Below...✅"
-                    )
-                    whatsapp = WhatsappMessage(payload=payload)
-                    return whatsapp.send_message()
-                else:
-                    return self.generic_error()
             else:
                 return self.generic_error()
         except Exception as e:
@@ -760,152 +562,6 @@ class WhatsappService:
             print(e)
             return self.generic_error()
 
-    def process_browse_jobs(self, session):
-        try:
-            if session.position == "industries":
-                session.payload["industry_id"] = self.formatted_message["list_reply"][
-                    "id"
-                ]
-                jobs = Vacancies.get_jobs_by_industry(session.payload["industry_id"])[
-                    0:10
-                ]
-                jobs_list = []
-                for job in jobs:
-                    jobs_list.append(
-                        {
-                            "id": job.id,
-                            "title": f"{job.corporate.name} {job.title}"[:23],
-                            "description": f"{job.closing_date} {job.description}",
-                        }
-                    )
-                if len(jobs_list) == 0:
-                    payload = Utils.get_normal_response(
-                        self.formatted_message,
-                        "🙁 Browse by industry",
-                        "No vacancies available for this industry",
-                    )
-                    whatsapp = WhatsappMessage(payload=payload)
-                    return whatsapp.send_message()
-                session.position = "jobs"
-                session.save()
-                payload = Utils.get_job_list(self.formatted_message, jobs_list)
-                whatsapp = WhatsappMessage(payload=payload)
-                return whatsapp.send_message()
-            elif session.position == "jobs":
-                session.position = "application"
-                session.payload["job_id"] = self.formatted_message["list_reply"]["id"]
-                session.payload["job_title"] = self.formatted_message["list_reply"][
-                    "title"
-                ]
-                session.save()
-                payload = Utils.get_application_confirmation(
-                    self.formatted_message,
-                    self.formatted_message["list_reply"]["title"],
-                )
-                whatsapp = WhatsappMessage(payload=payload)
-                return whatsapp.send_message()
-            elif session.position == "application":
-                print("applying for job")
-                if (
-                    self.formatted_message["button_reply"]["title"].lower()
-                    == "confirm application"
-                ):
-                    vacancy = Vacancies.objects.filter(
-                        id=session.payload["job_id"]
-                    ).first()
-                    if vacancy:
-                        check_if_applied = Applications.objects.filter(
-                            applicant=self.client, vacancy=vacancy
-                        ).first()
-                        if check_if_applied:
-                            session.stage = "menu"
-                            session.position = "menu"
-                            session.save()
-                            payload = Utils.get_normal_response(
-                                self.formatted_message,
-                                "🙁 APPLICATION",
-                                "You have already applied for this job",
-                            )
-                            # reset_to_menu
-                            WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
-                                self.formatted_message["from_phone_number"],
-                                "menu",
-                                "menu",
-                                {},
-                            )
-                            whatsapp = WhatsappMessage(payload=payload)
-                            return whatsapp.send_message()
-                        application = Applications.objects.create(
-                            applicant=self.client, vacancy=vacancy, status=False
-                        )
-                        application.save()
-                        session.stage = "menu"
-                        session.position = "menu"
-                        session.save()
-                        payload = Utils.get_normal_response(
-                            self.formatted_message,
-                            "📃 APPLICATION",
-                            "Your job application has been sent successfully✅",
-                        )
-                        whatsapp = WhatsappMessage(payload=payload)
-                        return whatsapp.send_message()
-                    else:
-                        return self.generic_error()
-                elif (
-                    self.formatted_message["button_reply"]["title"].lower()
-                    == "cancel application"
-                ):
-                    session.position = "menu"
-                    session.stage = "menu"
-                    session.save()
-                    payload = Utils.get_menu(
-                        self.formatted_message,
-                        "❌Application Cancelled Continue Below...",
-                    )
-                    whatsapp = WhatsappMessage(payload=payload)
-                    return whatsapp.send_message()
-                else:
-                    return self.generic_error()
-            else:
-                return self.generic_error()
-        except Exception as e:
-            print(e)
-            return self.generic_error()
-
-    def process_applications(self, session):
-        try:
-            if session.position == "all_applications":
-                try:
-                    session.position = "application"
-                    session.payload["application_id"] = self.formatted_message[
-                        "list_reply"
-                    ]["id"]
-                    session.save()
-                    application = Applications.get_application_by_id(
-                        session.payload["application_id"]
-                    )
-                    job_status = (
-                        "Pending" if application.status == False else "Approved"
-                    )
-                    application_details = f"Job Title: {application.vacancy.title}\nJob Description: {application.vacancy.description}\nJob Closing Date: {application.vacancy.closing_date}\nJob Status: {job_status}\n\nSay _hie_ or type _menu_ to continue to the main menu"
-                    payload = Utils.get_application_details(
-                        self.formatted_message, application_details
-                    )
-                    # reset_to_menu
-                    WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
-                        self.formatted_message["from_phone_number"], "menu", "menu", {}
-                    )
-                    whatsapp = WhatsappMessage(payload=payload)
-                    return whatsapp.send_message()
-                except Exception as e:
-                    print(e)
-                    return self.generic_error()
-            else:
-                return self.generic_error()
-        except Exception as e:
-            print(e)
-            return self.generic_error()
-
 
 class WhatsappMessage:
     def __init__(self, payload: dict):
@@ -920,7 +576,7 @@ class WhatsappMessage:
         print("SENDING TO WHATSAPP PAYLOAD >>", payload)
         response = requests.request(
             "POST",
-            f'{config("WHATSAPP_URL")}106823882268964/messages',
+            f'{config("WHATSAPP_URL")}105156245801398/messages',
             headers=headers,
             data=payload,
         )
