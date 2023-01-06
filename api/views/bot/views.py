@@ -1,7 +1,11 @@
+from http.client import HTTPResponse
+
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 
+from services.helpers.api_response import api_response
 from services.helpers.whatsapp import is_valid_message, format_message
+from services.whatsapp import WhatsappService
 
 
 class WebhookView(APIView):
@@ -18,15 +22,13 @@ class WebhookView(APIView):
                     print("Formatted Data", response, user_status)
                     service = WhatsappService(response, user_status, user=user)
                     service.process()
-                    return JsonResponse(
-                        {"message": "received"}, status=status.HTTP_200_OK
-                    )
+                    return api_response(request, data={"message": "received"})
                 pass
             else:
                 print("INVALID MESSAGE")
         except Exception as e:
             print("Failed to action => error", e)
-        return JsonResponse({"message": "received"}, status=status.HTTP_200_OK)
+        return api_response(request, data={"message": "received"})
 
     def get(self, request, *args, **kwargs):
         form_data = request.query_params

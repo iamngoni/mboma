@@ -28,7 +28,8 @@ class Utils:
     def get_not_registered(data):
         return Utils.generic_message(
             data,
-            "You are not registered, please register first\n\nLets get to know each other, please enter your first name...",
+            "You are not registered, please register first\n\nLets get to know each other, please enter your first "
+            "name...",
         )
 
     def get_generic_update_question(data, message):
