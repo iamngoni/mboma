@@ -53,6 +53,13 @@ class WhatsappService:
                     message.send()
             else:
                 logger.info("user is not registered")
+                logger.info("checking if there's a session")
+                session = WhatsappSession.get_whatsapp_session(
+                    self.formatted_message.get("from_phone_number")
+                )
+                if session and session.stage == "registration":
+                    self.process_registration()
+
                 self.send_greeting_message()
                 self.register_user()
         except Exception as exc:
@@ -244,8 +251,8 @@ class WhatsappService:
                     text="Please enter your last name...",
                     phone_number=self.formatted_message.get("from_phone_number"),
                 )
-                whatsapp = WhatsappMessage(payload=payload.to_json())
-                whatsapp.send()
+                message = WhatsappMessage(payload=payload.to_json())
+                message.send()
                 return
             elif session.position == "last_name":
                 session.position = "email_address"
@@ -257,8 +264,8 @@ class WhatsappService:
                     "third party...",
                     phone_number=self.formatted_message.get("from_phone_number"),
                 )
-                whatsapp = WhatsappMessage(payload=payload.to_json())
-                whatsapp.send()
+                message = WhatsappMessage(payload=payload.to_json())
+                message.send()
                 return
             elif session.position == "email_address":
                 email = self.formatted_message["message"]
@@ -279,8 +286,8 @@ class WhatsappService:
                                 "from_phone_number"
                             ),
                         )
-                        whatsapp = WhatsappMessage(payload=payload.to_json())
-                        whatsapp.send()
+                        message = WhatsappMessage(payload=payload.to_json())
+                        message.send()
                         return
 
                 session.payload["email_address"] = self.formatted_message["message"]
