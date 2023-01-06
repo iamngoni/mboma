@@ -9,10 +9,14 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import logging
+import sys
 from pathlib import Path
 from decouple import config
 import os
+from loguru import logger
+
+from services.helpers.intercept_handler import InterceptHandler
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -215,3 +219,7 @@ CHANNEL_LAYERS = {
         },
     },
 }
+
+logger.add(sys.stdout, colorize=True, level="INFO")
+logger.add(sys.stderr, colorize=True, backtrace=True, diagnose=True)
+logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)
