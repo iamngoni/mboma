@@ -46,7 +46,8 @@ class WhatsappService:
                     return self.process_text_message()
                 elif self.formatted_message["message_type"] == "interactive":
                     logger.info("processing interactive message")
-
+                    # process interactive message
+                    return self.process_interactive_message()
                 else:
                     logger.error("failed to determine type of message")
                     payload = FormattedTextMessage(
