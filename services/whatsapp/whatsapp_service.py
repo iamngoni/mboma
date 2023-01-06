@@ -29,60 +29,68 @@ class WhatsappService:
         )
 
     def process(self):
-        mark_message_as_read.delay(self.formatted_message.get("message_id"))
-        if self.is_registered:
-            if self.formatted_message["message_type"] == "text":
-                # process text message
-                return self.process_text_message()
-            else:
-                payload = FormattedTextMessage(
-                    text="Invalid Response. Try again",
-                    phone_number=self.formatted_message.get("from_phone_number"),
-                )
-                message = WhatsappMessage(payload=payload.to_json())
-                message.send()
-        else:
-            logger.info(f"User not registered. Creating user and new session")
-            user = User.create_user(
-                username=self.formatted_message["from_phone_number"],
-                first_name=self.formatted_message["from_phone_number"],
-                last_name=self.formatted_message["whatsapp_name"],
-                email=f"{self.formatted_message['from_phone_number']}@modestnerd.co",
-                phone_number=self.formatted_message["from_phone_number"],
-                role=UserRoles.CUSTOMER,
-                source="bot",
-            )
-            if user:
-                try:
-                    WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
-                        self.formatted_message["from_phone_number"],
-                        "greeting",
-                        "greeting",
-                        payload={},
-                    )
+        # mark incoming message as read
+        try:
+            mark_message_as_read.delay(self.formatted_message.get("message_id"))
 
-                    user.has_session = True
-                    user.save()
-                except Exception as exc:
-                    logger.error(f"Error creating session: {exc}")
+            if self.is_registered:
+                if self.formatted_message["message_type"] == "text":
+                    # process text message
+                    return self.process_text_message()
+                else:
                     payload = FormattedTextMessage(
-                        text="Error creating session. Try again",
+                        text="Invalid Response. Try again",
+                        phone_number=self.formatted_message.get("from_phone_number"),
+                    )
+                    message = WhatsappMessage(payload=payload.to_json())
+                    message.send()
+            else:
+                logger.info(f"User not registered. Creating user and new session")
+                user = User.create_user(
+                    username=self.formatted_message["from_phone_number"],
+                    first_name=self.formatted_message["from_phone_number"],
+                    last_name=self.formatted_message["whatsapp_name"],
+                    email=f"{self.formatted_message['from_phone_number']}@modestnerd.co",
+                    phone_number=self.formatted_message["from_phone_number"],
+                    role=UserRoles.CUSTOMER,
+                    source="bot",
+                )
+                if user:
+                    try:
+                        WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
+                            self.formatted_message["from_phone_number"],
+                            "greeting",
+                            "greeting",
+                            payload={},
+                        )
+
+                        user.has_session = True
+                        user.save()
+                    except Exception as exc:
+                        logger.error(f"Error creating session: {exc}")
+                        payload = FormattedTextMessage(
+                            text="Error creating session. Try again",
+                            phone_number=self.formatted_message.get(
+                                "from_phone_number"
+                            ),
+                        )
+                        message = WhatsappMessage(payload=payload.to_json())
+                        message.send()
+                        return
+
+                    self.send_greeting_message()
+                else:
+                    logger.error(f"Error creating user: {user}")
+                    payload = FormattedTextMessage(
+                        text="Error creating user",
                         phone_number=self.formatted_message.get("from_phone_number"),
                     )
                     message = WhatsappMessage(payload=payload.to_json())
                     message.send()
                     return
-
-                self.send_greeting_message()
-            else:
-                logger.error(f"Error creating user: {user}")
-                payload = FormattedTextMessage(
-                    text="Error creating user",
-                    phone_number=self.formatted_message.get("from_phone_number"),
-                )
-                message = WhatsappMessage(payload=payload.to_json())
-                message.send()
-                return
+        except Exception as exc:
+            logger.error(f"Failed to process incoming message -> {exc}")
+            return
 
     def process_text_message(self):
         session = WhatsappSession.get_whatsapp_session(

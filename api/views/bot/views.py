@@ -27,9 +27,9 @@ class WebhookView(APIView):
                     return api_response(request, data={"message": "received"})
                 pass
             else:
-                logger.info("INVALID MESSAGE")
-        except Exception as e:
-            logger.info(f"Failed to action {e}")
+                logger.info("Not an incoming message. Probably an event notification")
+        except Exception as exc:
+            logger.info(f"Failed to action -> {exc}")
 
         return api_response(request, data={"message": "received"})
 
