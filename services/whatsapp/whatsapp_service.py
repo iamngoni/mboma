@@ -15,6 +15,7 @@ from services.whatsapp.messages import (
     FormattedImageMessage,
 )
 from services.whatsapp.whatsapp_message import WhatsappMessage
+from shop.models import Product, ProductCategory
 from users.models import User, UserRoles
 
 
@@ -43,6 +44,9 @@ class WhatsappService:
                     logger.info("processing text message")
                     # process text message
                     return self.process_text_message()
+                elif self.formatted_message["message_type"] == "interactive":
+                    logger.info("processing interactive message")
+
                 else:
                     logger.error("failed to determine type of message")
                     payload = FormattedTextMessage(
@@ -84,6 +88,18 @@ class WhatsappService:
                 message = WhatsappMessage(payload=payload)
                 message.send()
                 return
+        else:
+            logger.error("failed to get or create session")
+            self.send_error_message()
+            return
+
+    def process_interactive_message(self):
+        session = WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
+            self.formatted_message["from_phone_number"]
+        )
+        if session:
+            if session.stage == "menu":
+                return self.process_menu(session)
         else:
             logger.error("failed to get or create session")
             self.send_error_message()
@@ -167,27 +183,33 @@ class WhatsappService:
         try:
             if session.position == "menu":
                 if self.user.is_registered:
-                    logger.info(">>>>>>", self.formatted_message["list_reply"]["id"])
-                    if self.formatted_message["list_reply"]["id"] == "1":
-                        session.stage = "uploads"
-                        session.position = "document_type"
+                    menu_item_id = self.formatted_message["list_reply"]["id"]
+                    if menu_item_id == "1":
+                        session.stage = "products"
+                        session.position = "categories"
                         session.save()
-                        # document_types = DocumentTypes.objects.all().order_by("id")
-                        document_types = []
-                        document_types_list = []
-                        for document_type in document_types:
-                            document_types_list.append(
-                                {
-                                    "id": document_type.id,
-                                    "title": document_type.document_type,
-                                    "description": document_type.description,
-                                }
-                            )
-                        payload = Utils.get_document_type_client(
-                            self.formatted_message, document_types_list
+
+                        categories = ProductCategory.objects.all()
+                        payload = FormattedInteractiveMessage(
+                            header_text="Tregers Products",
+                            text="Choose Product Category To Retrieve Products",
+                            phone_number=self.formatted_message.get(
+                                "from_phone_number"
+                            ),
+                            section_text="Product Categories",
+                            rows=[
+                                InteractiveRow(
+                                    id=index,
+                                    title=category.name,
+                                    description=category.description,
+                                )
+                                for index, category in enumerate(categories)
+                            ],
                         )
-                        whatsapp = WhatsappMessage(payload=payload)
-                        return whatsapp.send()
+
+                        message = WhatsappMessage(payload=payload.to_json())
+                        message.send()
+                        return
 
                     elif self.formatted_message["list_reply"]["id"] == "2":
                         session.stage = "update_info"
@@ -292,6 +314,7 @@ class WhatsappService:
                         return
 
                 session.payload["email_address"] = self.formatted_message["message"]
+                session.stage = "menu"
                 session.position = "menu"
                 session.save()
 

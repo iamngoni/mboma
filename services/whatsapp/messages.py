@@ -102,12 +102,18 @@ class FormattedImageMessage:
 
 class FormattedInteractiveMessage:
     def __init__(
-        self, header_text: str, text: str, phone_number: str, rows: List[InteractiveRow]
+        self,
+        header_text: str,
+        text: str,
+        phone_number: str,
+        rows: List[InteractiveRow],
+        section_text: str = "Menu Options",
     ):
         self.header_text = header_text
         self.text = text
         self.phone_number = phone_number
         self.rows = rows
+        self.section_text = section_text
 
     def to_json(self) -> dict:
         return {
@@ -123,7 +129,7 @@ class FormattedInteractiveMessage:
                     "button": "Tregers Menu",
                     "sections": [
                         {
-                            "title": "Menu Options",
+                            "title": self.section_text,
                             "rows": [row.to_json() for row in self.rows],
                         }
                     ],
