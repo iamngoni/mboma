@@ -120,10 +120,10 @@ class FormattedInteractiveMessage:
                 "header": {"type": "text", "text": self.header_text},
                 "body": {"text": self.text},
                 "action": {
-                    "button": "Menu Options",
+                    "button": "Tregers Menu",
                     "sections": [
                         {
-                            "title": "Options",
+                            "title": "Menu Options",
                             "rows": [row.to_json() for row in self.rows],
                         }
                     ],
