@@ -335,7 +335,7 @@ class WhatsappService:
             rows = [
                 InteractiveRow(
                     id=index,
-                    title=product.name,
+                    title=product.name[:24],
                     description=product.description,
                 )
                 for index, product in enumerate(products)
