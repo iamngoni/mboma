@@ -226,6 +226,7 @@ class WhatsappService:
 
                         # get categories with more than one product
                         categories = ProductCategory.objects.filter(products__isnull=False).distinct()
+                        logger.info(f"Categories with products -> {categories}")
 
                         rows = [
                             InteractiveRow(
