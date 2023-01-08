@@ -184,8 +184,8 @@ class WhatsappService:
         return
 
     def send_error_message(self):
-        payload = FormattedTemplateMessage(
-            data=self.formatted_message,
+        payload = FormattedTextMessage(
+            phone_number=self.formatted_message.get("from_phone_number"),
             text=f"Oops, something went wrong. Please try again later",
         )
         whatsapp = WhatsappMessage(payload=payload.to_json())
