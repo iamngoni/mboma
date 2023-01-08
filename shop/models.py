@@ -39,6 +39,8 @@ class Product(SoftDeleteModel):
     )
     SKU = models.CharField(max_length=50, blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    image = models.ImageField(upload_to="images/", null=False, blank=False)
+    image_alt = models.ImageField(upload_to="images/", null=False, blank=False)
 
     class Meta:
         verbose_name = "Product"
@@ -48,11 +50,16 @@ class Product(SoftDeleteModel):
     def __str__(self):
         return self.name
 
+    @property
+    def is_available(self):
+        # use inventory to determine if product is available
+        return self.inventory.quantity > 0
+
 
 class ProductInventory(SoftDeleteModel):
     quantity = models.IntegerField(default=0)
     product = models.OneToOneField(
-        Product, on_delete=models.CASCADE, related_name="product"
+        Product, on_delete=models.CASCADE, related_name="inventory"
     )
 
     class Meta:

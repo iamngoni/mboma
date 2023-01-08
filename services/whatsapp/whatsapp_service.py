@@ -109,9 +109,6 @@ class WhatsappService:
                 if session.position == "categories":
                     self.process_products_categories_menu(session)
                     return
-                elif session.position == "products":
-                    self.process_products_menu(session)
-                    return
             else:
                 logger.error("stage not found")
                 payload = FormattedTextMessage(
@@ -343,7 +340,7 @@ class WhatsappService:
             session.save()
 
             payload = FormattedProductsMessage(
-                header_text=f"{category.name} Products",
+                header_text=f"{category.get('title')} Products",
                 text="Choose Product To Retrieve More Information",
                 phone_number=self.formatted_message.get("from_phone_number"),
                 section_title="Products",
