@@ -8,7 +8,7 @@ class WhatsappSession(SoftDeleteModel):
     phone_number = models.CharField(max_length=255, blank=True, null=True)
     stage = models.CharField(max_length=255, blank=True, null=True)
     position = models.CharField(max_length=255, blank=True, null=True)
-    payload = models.JSONField(blank=True, null=True, default=dict)
+    payload = models.JSONField(blank=False, null=False, default=dict)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

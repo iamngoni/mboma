@@ -239,6 +239,10 @@ class WhatsappService:
                         ]
                         logger.info("Created rows for menu")
                         logger.info(f"Current session to update -> {session}")
+                        if session.payload is None:
+                            session.payload = {}
+                            session.save()
+
                         session.payload["categories"] = [row.to_json() for row in rows]
                         session.save()
                         logger.info("saved categories in session payload")
