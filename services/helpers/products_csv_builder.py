@@ -20,19 +20,13 @@ def products_csv_builder(products: List[Product]):
             "id",
             "title",
             "description",
-            "rich_text_description",
             "availability",
             "condition",
             "price",
             "link",
             "image_link",
             "brand",
-            "additional_image_link",
-            "product_type",
-            "sale_price",
-            "size",
-            "status",
-            "inventory",
+            "quantity_to_sell_on_facebook",
         ]
     ]
     for product in products:
@@ -41,16 +35,12 @@ def products_csv_builder(products: List[Product]):
                 product.id,
                 product.name,
                 product.description,
-                product.description,
                 "in stock" if product.is_available else "out of stock",
                 "new",
                 f"{product.price} USD",
                 f"https://mboma.modestnerd.co/api/1.0/products/{product.id}",
                 product.image.url,
                 "Tregers",
-                product.image_alt.url,
-                f"{product.price} USD",
-                "published",
                 product.inventory.quantity,
             ]
         )
