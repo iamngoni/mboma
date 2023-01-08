@@ -326,7 +326,7 @@ class WhatsappService:
             logger.info(f"Categories in session -> {categories}")
             # TODO: this might result in index error so watch out
             filtered_categories = list(
-                filter(lambda ct: ct.get("id") == menu_item_id, categories)
+                filter(lambda ct: int(ct.get("id")) == int(menu_item_id), categories)
             )
             logger.info(f"Filtered Categories -> {filtered_categories}")
             category = filtered_categories[0] if len(filtered_categories) > 0 else None
