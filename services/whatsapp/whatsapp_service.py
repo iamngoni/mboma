@@ -305,11 +305,11 @@ class WhatsappService:
             categories = session.payload.get("categories")
             logger.info(f"Categories in session -> {categories}")
             # TODO: this might result in index error so watch out
-            category = list(
+            filtered_categories = list(
                 filter(lambda category: category.get("id") == menu_item_id, categories)
             )
-            logger.info(f"Filtered Category -> {category}")
-            category = category[0] if len(category) > 0 else None
+            logger.info(f"Filtered Categories -> {filtered_categories}")
+            category = filtered_categories[0] if len(filtered_categories) > 0 else None
             products = Product.objects.filter(category__name=category.get("title"))
             logger.info(f"Products -> {products}")
             rows = [
