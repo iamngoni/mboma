@@ -3,6 +3,7 @@ from typing import List
 
 from services.whatsapp.interactive_row import InteractiveRow
 from services.whatsapp.whatsapp_text_button import WhatsAppTextButton
+from shop.models import Product
 
 
 class FormattedTemplateMessage:
@@ -133,6 +134,46 @@ class FormattedInteractiveMessage:
                             "rows": [row.to_json() for row in self.rows],
                         }
                     ],
+                },
+            },
+        }
+
+
+class FormattedProductsMessage:
+    def __init__(
+        self,
+        header_text: str,
+        text: str,
+        phone_number: str,
+        catalog_id: str,
+        section_title: str = "Products",
+        products: List[Product] = [],
+    ):
+        self.header_text = header_text
+        self.text = text
+        self.phone_number = phone_number
+        self.catalog_id = catalog_id
+        self.section_title = section_title
+        self.products = products
+
+    def to_json(self) -> dict:
+        return {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": self.phone_number,
+            "type": "interactive",
+            "interactive": {
+                "type": "product_list",
+                "header": {"type": "text", "text": self.header_text},
+                "body": {"text": self.text},
+                "action": {
+                    "catalog_id": self.catalog_id,
+                    "sections": [
+                        {
+                            "title": self.section_title,
+                            "product_items": [{"product_retailer_id": product.id} for product in self.products],
+                        }
+                    ]
                 },
             },
         }

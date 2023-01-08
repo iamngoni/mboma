@@ -11,11 +11,12 @@ from services.whatsapp.interactive_row import InteractiveRow
 from services.whatsapp.messages import (
     FormattedTextMessage,
     FormattedInteractiveMessage,
-    FormattedImageMessage,
+    FormattedImageMessage, FormattedProductsMessage,
 )
 from services.whatsapp.whatsapp_message import WhatsappMessage
 from shop.models import Product, ProductCategory
 from users.models import User, UserRoles
+from decouple import config
 
 
 class WhatsappService:
@@ -107,6 +108,9 @@ class WhatsappService:
             elif session.stage == "products":
                 if session.position == "categories":
                     self.process_products_categories_menu(session)
+                    return
+                elif session.position == "products":
+                    self.process_products_menu(session)
                     return
             else:
                 logger.error("stage not found")
@@ -332,24 +336,19 @@ class WhatsappService:
             category = filtered_categories[0] if len(filtered_categories) > 0 else None
             products = Product.objects.filter(category__name=category.get("title"))
             logger.info(f"Products -> {products}")
-            rows = [
-                InteractiveRow(
-                    id=index,
-                    title=product.name[:24],
-                    description=product.description,
-                )
-                for index, product in enumerate(products)
-            ]
 
-            session.payload["products"] = [row.to_json() for row in rows]
+            session.stage = "products"
+            session.position = "products"
+            session.payload["products"] = [{"id": product.id} for product in products]
             session.save()
 
-            payload = FormattedInteractiveMessage(
-                header_text="Tregers Products",
+            payload = FormattedProductsMessage(
+                header_text=f"{category.name} Products",
                 text="Choose Product To Retrieve More Information",
                 phone_number=self.formatted_message.get("from_phone_number"),
-                section_text="Products",
-                rows=rows,
+                section_title="Products",
+                catalog_id=config("CATALOG_ID"),
+                products=products,
             )
 
             message = WhatsappMessage(payload=payload.to_json())
@@ -361,6 +360,7 @@ class WhatsappService:
             self.send_error_message()
             self.send_main_menu()
             return
+
 
     def process_registration(self, session):
         try:
