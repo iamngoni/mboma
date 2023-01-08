@@ -238,7 +238,7 @@ class WhatsappService:
                             for index, category in enumerate(categories)
                         ]
                         logger.info("Created rows for menu")
-
+                        logger.info(f"Current session to update -> {session}")
                         session.payload["categories"] = [row.to_json() for row in rows]
                         session.save()
                         logger.info("saved categories in session payload")

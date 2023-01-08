@@ -13,7 +13,7 @@ class WhatsappSession(SoftDeleteModel):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.phone_number}"
+        return f"{self.phone_number} | {self.stage} | {self.position} | {self.payload}"
 
     class Meta:
         db_table = "whatsapp_sessions"
