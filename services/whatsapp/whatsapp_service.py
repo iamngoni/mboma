@@ -307,8 +307,9 @@ class WhatsappService:
             # TODO: this might result in index error so watch out
             category = list(
                 filter(lambda category: category.get("id") == menu_item_id, categories)
-            )[0]
-            logger.info(f"Category -> {category}")
+            )
+            logger.info(f"Filtered Category -> {category}")
+            category = category[0] if len(category) > 0 else None
             products = Product.objects.filter(category__name=category.get("title"))
             logger.info(f"Products -> {products}")
             rows = [
