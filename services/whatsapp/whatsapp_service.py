@@ -304,8 +304,8 @@ class WhatsappService:
             menu_item_id = self.formatted_message["list_reply"]["id"]
             categories = session.payload.get("categories")
             logger.info(f"Categories in session -> {categories}")
-            category = filter(
-                lambda category: category.get("id") == menu_item_id, categories
+            category = list(
+                filter(lambda category: category.get("id") == menu_item_id, categories)
             ).first()
             logger.info(f"Category -> {category}")
             products = Product.objects.filter(category__name=category.get("title"))
