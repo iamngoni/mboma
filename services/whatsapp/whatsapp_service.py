@@ -321,6 +321,7 @@ class WhatsappService:
     def process_products_categories_menu(self, session):
         try:
             menu_item_id = self.formatted_message["list_reply"]["id"]
+            logger.info(f"Menu item id -> {menu_item_id}")
             categories = session.payload.get("categories")
             logger.info(f"Categories in session -> {categories}")
             # TODO: this might result in index error so watch out
