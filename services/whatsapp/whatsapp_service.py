@@ -9,7 +9,6 @@ from services.helpers.generate_random_password import generate_random_password
 from services.helpers.utils import Utils
 from services.whatsapp.interactive_row import InteractiveRow
 from services.whatsapp.messages import (
-    FormattedTemplateMessage,
     FormattedTextMessage,
     FormattedInteractiveMessage,
     FormattedImageMessage,
