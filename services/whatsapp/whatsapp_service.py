@@ -225,9 +225,10 @@ class WhatsappService:
                         session.save()
 
                         # get categories with more than one product
-                        categories = ProductCategory.objects.filter(products__isnull=False).distinct()
+                        categories = ProductCategory.objects.exclude(products__isnull=True)
                         logger.info(f"Categories with products -> {categories}")
 
+                        logger.info("creating rows for categories menu")
                         rows = [
                             InteractiveRow(
                                 id=index,
@@ -236,10 +237,12 @@ class WhatsappService:
                             )
                             for index, category in enumerate(categories)
                         ]
+                        logger.info("Created rows for menu")
 
                         session.payload["categories"] = [row.to_json() for row in rows]
                         session.save()
-
+                        logger.info("saved categories in session payload")
+                        logger.info("generating payload for categories menu")
                         payload = FormattedInteractiveMessage(
                             header_text="Tregers Products",
                             text="Choose Product Category To Retrieve Products",
@@ -249,7 +252,8 @@ class WhatsappService:
                             section_text="Product Categories",
                             rows=rows,
                         )
-
+                        logger.info("payload generated")
+                        logger.info("sending payload")
                         message = WhatsappMessage(payload=payload.to_json())
                         message.send()
                         return
