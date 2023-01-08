@@ -190,10 +190,10 @@ class WhatsappService:
         message.send()
         return
 
-    def send_error_message(self):
+    def send_error_message(self, text="An error occurred. Please try again"):
         payload = FormattedTextMessage(
             phone_number=self.formatted_message.get("from_phone_number"),
-            text=f"Oops, something went wrong. Please try again later",
+            text=text,
         )
         whatsapp = WhatsappMessage(payload=payload.to_json())
         whatsapp.send()
@@ -304,7 +304,8 @@ class WhatsappService:
                 return
         except Exception as exc:
             logger.error(f"Error processing menu -> {exc}")
-            self.send_error_message()
+            self.send_error_message(text="Failed to process menu option. Please try again")
+            self.send_main_menu()
             return
 
     def process_products_categories_menu(self, session):
