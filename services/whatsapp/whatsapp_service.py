@@ -224,7 +224,8 @@ class WhatsappService:
                         session.position = "categories"
                         session.save()
 
-                        categories = ProductCategory.objects.all()
+                        # get categories with more than one product
+                        categories = ProductCategory.objects.filter(products__is_null=False).distinct()
                         rows = [
                             InteractiveRow(
                                 id=index,
