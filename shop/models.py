@@ -33,7 +33,7 @@ class ProductCategory(SoftDeleteModel):
 
 class Product(SoftDeleteModel):
     name = models.CharField(max_length=50, blank=False, null=False)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=False, null=False)
     category = models.ForeignKey(
         ProductCategory, on_delete=models.CASCADE, related_name="products"
     )
