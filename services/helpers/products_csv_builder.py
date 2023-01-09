@@ -4,6 +4,7 @@ from loguru import logger
 import csv
 
 from shop.models import Product
+from decouple import config
 
 
 class CsvTextBuilder(object):
@@ -39,7 +40,7 @@ def products_csv_builder(products: List[Product]):
                 "new",
                 f"{product.price} USD",
                 f"https://mboma.modestnerd.co/api/1.0/products/{product.id}",
-                product.image.url,
+                f"{config('ORIGIN')}{product.image.url}",
                 "Tregers",
                 product.inventory.quantity,
             ]
