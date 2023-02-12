@@ -23,7 +23,7 @@ class WhatsappSession(SoftDeleteModel):
 
     @classmethod
     def create_whatsapp_session_or_get_whatsapp_session(
-        cls, phone_number, stage, position, payload=None
+        cls, phone_number, stage, position, payload
     ):
         whatsapp_session = cls.objects.filter(phone_number=phone_number).first()
 

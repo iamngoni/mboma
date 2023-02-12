@@ -11,7 +11,8 @@ from services.whatsapp.interactive_row import InteractiveRow
 from services.whatsapp.messages import (
     FormattedTextMessage,
     FormattedInteractiveMessage,
-    FormattedImageMessage, FormattedProductsMessage,
+    FormattedImageMessage,
+    FormattedProductsMessage,
 )
 from services.whatsapp.whatsapp_message import WhatsappMessage
 from shop.models import Product, ProductCategory
@@ -74,15 +75,18 @@ class WhatsappService:
 
     def process_text_message(self):
         session = WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
-            self.formatted_message["from_phone_number"], "menu", "menu"
+            self.formatted_message["from_phone_number"], "menu", "menu", {}
         )
         if session:
             logger.info("has session")
             if session.stage == "registration":
+                logger.info("sending to process registration")
                 return self.process_registration(session)
             elif session.stage == "menu":
+                logger.info("sending to process menu")
                 return self.process_menu(session)
             else:
+                logger.info("sending back menu")
                 payload = Utils.get_menu(
                     self.formatted_message, f"Welcome Back, {self.full_name}"
                 )
@@ -226,7 +230,9 @@ class WhatsappService:
                         session.save()
 
                         # get categories with more than one product
-                        categories = ProductCategory.objects.exclude(products__isnull=True)
+                        categories = ProductCategory.objects.exclude(
+                            products__isnull=True
+                        )
                         logger.info(f"Categories with products -> {categories}")
 
                         logger.info("creating rows for categories menu")
@@ -315,7 +321,9 @@ class WhatsappService:
                 return
         except Exception as exc:
             logger.error(f"Error processing menu -> {exc}")
-            self.send_error_message(text="Failed to process menu option. Please try again")
+            self.send_error_message(
+                text="Failed to process menu option. Please try again"
+            )
             self.send_main_menu()
             return
 
@@ -357,7 +365,6 @@ class WhatsappService:
             self.send_error_message()
             self.send_main_menu()
             return
-
 
     def process_registration(self, session):
         try:
