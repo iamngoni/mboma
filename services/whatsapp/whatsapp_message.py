@@ -1,7 +1,10 @@
 from decouple import config
 import json
 import requests
+from django.conf import settings
 from loguru import logger
+
+from services.helpers.api_response import api_response
 
 
 class WhatsappMessage:
@@ -15,6 +18,7 @@ class WhatsappMessage:
         }
 
         payload = json.dumps(self.payload)
+
         logger.info(f"send payload back to whatsapp -> {payload}")
 
         # check if message is an image and cache

@@ -87,3 +87,18 @@ class Discount(SoftDeleteModel):
 
     def __str__(self):
         return f"Discount - {self.name} - {self.product.name}"
+
+
+class Order(SoftDeleteModel):
+    user = models.ForeignKey(
+        "users.User",
+        related_name="orders",
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+    )
+
+    class Meta:
+        verbose_name = "Order"
+        verbose_name_plural = "Orders"
+        table_prefix = "o"

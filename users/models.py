@@ -22,7 +22,7 @@ class User(SoftDeleteModel, AbstractUser):
     last_name = models.CharField(max_length=30, blank=False)
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=False)
-    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True, unique=True)
     role = models.CharField(
         max_length=50,
         blank=True,
@@ -75,6 +75,10 @@ class User(SoftDeleteModel, AbstractUser):
         user.set_password(password)
         user.save()
         return user
+
+    @classmethod
+    def is_registered(cls, phone_number):
+        return cls.objects.filter(phone_number=phone_number).count() > 0
 
     @classmethod
     def get_user_by_phone_number(cls, phone_number):

@@ -1,12 +1,16 @@
 from django.urls import path
 
-from api.views.bot.views import WebhookView
+from api.views.bot.views import WhatsAppView
 from api.views.shop.views import ProductDetailsView, ProductsCSVView
 
 urlpatterns = [
-    path("bot", WebhookView.as_view(), name="bot"),
-    path("products_catalog/csv", ProductsCSVView.as_view(), name="products csv view"),
+    path("bot", WhatsAppView.as_view(), name="WhatsApp View"),
     path(
-        "products/<str:pk>", ProductDetailsView.as_view(), name="product details view"
+        "products_catalog/csv",
+        ProductsCSVView.as_view(),
+        name="Products Catalog Upload View",
+    ),
+    path(
+        "products/<str:pk>", ProductDetailsView.as_view(), name="Product Details View"
     ),
 ]

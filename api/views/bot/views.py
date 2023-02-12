@@ -1,31 +1,35 @@
+#
+#  views.py
+#  mboma
+#
+#  Created by Ngonidzashe Mangudya on 12/2/2023.
+
 from loguru import logger
 from rest_framework.parsers import JSONParser
 from rest_framework.views import APIView
 
+from services.dtos.whatsapp_message import WhatsAppMessageDTO
 from services.helpers.api_response import api_response
-from services.helpers.whatsapp import is_valid_message, format_message
-from services.whatsapp.whatsapp_service import WhatsappService
+from services.helpers.whatsapp_helpers import WhatsAppHelpers
+from services.whatsapp.whatsapp_service import WhatsAppService
 from django.shortcuts import HttpResponse
 
 
-class WebhookView(APIView):
+class WhatsAppView(APIView):
     parser_classes = (JSONParser,)
 
     # This webhook is for whatsapp cloud api
     def post(self, request):
         try:
-            logger.info(f"INCOMING DATA: {request.data}")
-            valid = is_valid_message(request.data)
-            if valid:
-                success, response, user_status, user = format_message(request.data)
-                if success:
-                    logger.info(f"Formatted Data: {response, user_status}")
-                    service = WhatsappService(
-                        formatted_message=response, is_registered=user_status, user=user
-                    )
-                    service.process()
-                    return api_response(request, data={"message": "received"})
-                pass
+            requires_system_action = WhatsAppHelpers.requires_system_action(
+                request.data
+            )
+            if requires_system_action:
+                message: WhatsAppMessageDTO = WhatsAppHelpers.format_message(
+                    request.data
+                )
+                service = WhatsAppService(message)
+                service.process()
             else:
                 logger.info("Not an incoming message. Probably an event notification")
         except Exception as exc:
@@ -34,6 +38,9 @@ class WebhookView(APIView):
         return api_response(request, data={"message": "received"})
 
     def get(self, request, *args, **kwargs):
+        """Verify messages from Whatsapp
+        https://developers.facebook.com/docs/graph-api/webhooks/getting-started
+        """
         try:
             form_data = request.query_params
             mode = form_data.get("hub.mode")

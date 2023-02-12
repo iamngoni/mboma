@@ -16,8 +16,6 @@ from decouple import config
 import os
 from loguru import logger
 
-from services.helpers.intercept_handler import InterceptHandler
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -213,4 +211,3 @@ CHANNEL_LAYERS = {
 
 logger.add(sys.stdout, colorize=True, level="INFO", backtrace=True, diagnose=True)
 logger.add(sys.stderr, colorize=True, level="ERROR", backtrace=True, diagnose=True)
-logging.basicConfig(handlers=[InterceptHandler()], level=0, force=True)

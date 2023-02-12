@@ -1,13 +1,14 @@
-import json
 from typing import List
 
-from services.whatsapp.interactive_row import InteractiveRow
-from services.whatsapp.whatsapp_text_button import WhatsAppTextButton
-from shop.models import Product
 from loguru import logger
 
+from services.whatsapp.interactive_row import InteractiveRow
+from services.whatsapp.product_section import ProductSection
+from services.whatsapp.reply_button import ReplyButton
+from services.whatsapp.whatsapp_text_button import WhatsAppTextButton
 
-class FormattedTemplateMessage:
+
+class TemplateMessage:
     def __init__(
         self,
         data,
@@ -72,7 +73,7 @@ class FormattedTemplateMessage:
         return json_content
 
 
-class FormattedTextMessage:
+class TextMessage:
     def __init__(self, text: str, phone_number: str):
         self.text = text
         self.phone_number = phone_number
@@ -87,7 +88,7 @@ class FormattedTextMessage:
         }
 
 
-class FormattedImageMessage:
+class ImageMessage:
     def __init__(self, image_url: str, phone_number: str):
         self.image_url = image_url
         self.phone_number = phone_number
@@ -102,7 +103,7 @@ class FormattedImageMessage:
         }
 
 
-class FormattedInteractiveMessage:
+class InteractiveListMessage:
     def __init__(
         self,
         header_text: str,
@@ -140,26 +141,51 @@ class FormattedInteractiveMessage:
         }
 
 
-class FormattedProductsMessage:
+class InteractiveButtonMessage:
+    def __init__(
+        self,
+        text: str,
+        phone_number: str,
+        buttons: List[ReplyButton],
+    ):
+        self.text = text
+        self.phone_number = phone_number
+        self.buttons = buttons
+
+    def to_json(self) -> dict:
+        return {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": self.phone_number,
+            "type": "interactive",
+            "interactive": {
+                "type": "button",
+                "body": {"text": self.text},
+                "action": {
+                    "buttons": [button.to_json() for button in self.buttons],
+                },
+            },
+        }
+
+
+class ProductsMessage:
     def __init__(
         self,
         header_text: str,
         text: str,
         phone_number: str,
         catalog_id: str,
-        section_title: str = "Products",
-        products: List[Product] = [],
+        product_sections: List[ProductSection] = [],
     ):
         self.header_text = header_text
         self.text = text
         self.phone_number = phone_number
         self.catalog_id = catalog_id
-        self.section_title = section_title
-        self.products = products
+        self.product_sections = product_sections
 
     def to_json(self) -> dict:
         logger.info(self.catalog_id)
-        logger.info(self.products)
+        logger.info(self.product_sections)
         return {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -181,12 +207,13 @@ class FormattedProductsMessage:
                     "catalog_id": self.catalog_id,
                     "sections": [
                         {
-                            "title": self.section_title,
+                            "title": section.title,
                             "product_items": [
                                 {"product_retailer_id": product.id}
-                                for product in self.products
+                                for product in section.products
                             ],
                         }
+                        for section in self.product_sections
                     ],
                 },
             },

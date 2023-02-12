@@ -6,6 +6,7 @@ from loguru import logger
 
 class WhatsappSession(SoftDeleteModel):
     phone_number = models.CharField(max_length=255, blank=True, null=True)
+    dialog_name = models.CharField(max_length=255, blank=True, null=True)
     stage = models.CharField(max_length=255, blank=True, null=True)
     position = models.CharField(max_length=255, blank=True, null=True)
     payload = models.JSONField(blank=False, null=False, default=dict)
@@ -13,7 +14,7 @@ class WhatsappSession(SoftDeleteModel):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.phone_number} | {self.stage} | {self.position} | {self.payload}"
+        return f"{self.phone_number} | {self.stage} | {self.position} | {self.payload} | {self.dialog_name}"
 
     class Meta:
         db_table = "whatsapp_sessions"
@@ -22,32 +23,24 @@ class WhatsappSession(SoftDeleteModel):
         table_prefix = "ses"
 
     @classmethod
-    def create_whatsapp_session_or_get_whatsapp_session(
-        cls, phone_number, stage, position, payload
-    ):
-        whatsapp_session = cls.objects.filter(phone_number=phone_number).first()
+    def create_whatsapp_session_or_get_whatsapp_session(cls, phone_number):
+        session = cls.objects.filter(phone_number=phone_number).first()
 
-        if whatsapp_session:
-            logger.info(
-                f"Whatsapp session exists: {whatsapp_session}. Updating session"
-            )
-            cls.update_whatsapp_session(phone_number, stage, position, payload)
-            return whatsapp_session
+        if session:
+            logger.info(f"session exists --> {session}")
+            return session
         else:
-            whatsapp_session = cls(
+            session = cls(
                 phone_number=phone_number,
-                stage=stage,
-                position=position,
-                payload=payload,
             )
-            whatsapp_session.save()
+            session.save()
 
-            return whatsapp_session
+            return session
 
     @classmethod
-    def update_whatsapp_session(cls, phone_number, stage, position, payload):
+    def update_whatsapp_session(cls, phone_number, dialog_name, payload):
         whatsapp_session = cls.objects.filter(phone_number=phone_number).update(
-            stage=stage, position=position, payload=payload
+            dialog_name, payload=payload
         )
         return whatsapp_session
 
@@ -57,8 +50,7 @@ class WhatsappSession(SoftDeleteModel):
         return whatsapp_session
 
     def reset_to_menu(self):
-        self.stage = "menu"
-        self.position = "menu"
+        self.dialog_name = None
         self.payload = {}
         self.save()
         return self
