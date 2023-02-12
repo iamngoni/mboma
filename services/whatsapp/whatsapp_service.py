@@ -71,6 +71,8 @@ class WhatsappService:
                 self.register_user()
         except Exception as exc:
             logger.error(f"Failed to process incoming message -> {exc}")
+            self.send_error_message()
+            self.send_main_menu()
             return
 
     def process_text_message(self):
