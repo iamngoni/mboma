@@ -4,6 +4,7 @@ from typing import List
 from services.whatsapp.interactive_row import InteractiveRow
 from services.whatsapp.whatsapp_text_button import WhatsAppTextButton
 from shop.models import Product
+from loguru import logger
 
 
 class FormattedTemplateMessage:
@@ -157,6 +158,8 @@ class FormattedProductsMessage:
         self.products = products
 
     def to_json(self) -> dict:
+        logger.info(self.catalog_id)
+        logger.info(self.products)
         return {
             "messaging_product": "whatsapp",
             "recipient_type": "individual",
@@ -171,9 +174,12 @@ class FormattedProductsMessage:
                     "sections": [
                         {
                             "title": self.section_title,
-                            "product_items": [{"product_retailer_id": product.id} for product in self.products],
+                            "product_items": [
+                                {"product_retailer_id": product.id}
+                                for product in self.products
+                            ],
                         }
-                    ]
+                    ],
                 },
             },
         }
