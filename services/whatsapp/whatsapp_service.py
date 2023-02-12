@@ -354,7 +354,7 @@ class WhatsappService:
                 text="Choose Product To Retrieve More Information",
                 phone_number=self.formatted_message.get("from_phone_number"),
                 section_title="Products",
-                catalog_id="3469193853364820",
+                catalog_id=config("CATALOG_ID"),
                 products=products,
             )
 
