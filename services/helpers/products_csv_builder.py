@@ -28,6 +28,7 @@ def products_csv_builder(products: List[Product]):
             "image_link",
             "brand",
             "quantity_to_sell_on_facebook",
+            "google_product_category",
         ]
     ]
     for product in products:
@@ -43,6 +44,7 @@ def products_csv_builder(products: List[Product]):
                 f"{config('ORIGIN')}{product.image.url}",
                 "Tregers",
                 product.inventory.quantity,
+                "3348",
             ]
         )
 
