@@ -53,22 +53,6 @@ def format_message(incoming_message):
                     "changes"
                 ][0]["value"]["messages"][0]["interactive"]["list_reply"]
 
-        if formatted_message["message_type"] == "document":
-            formatted_message["document"] = incoming_message["entry"][0]["changes"][0][
-                "value"
-            ]["messages"][0]["document"]
-            formatted_message["media_id"] = incoming_message["entry"][0]["changes"][0][
-                "value"
-            ]["messages"][0]["document"]["id"]
-
-        if formatted_message["message_type"] == "image":
-            formatted_message["image"] = incoming_message["entry"][0]["changes"][0][
-                "value"
-            ]["messages"][0]["image"]
-            formatted_message["media_id"] = incoming_message["entry"][0]["changes"][0][
-                "value"
-            ]["messages"][0]["image"]["id"]
-
         user = User.objects.filter(
             phone_number=formatted_message["from_phone_number"]
         ).first()
