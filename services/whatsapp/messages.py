@@ -167,8 +167,16 @@ class FormattedProductsMessage:
             "type": "interactive",
             "interactive": {
                 "type": "product_list",
-                "header": {"type": "text", "text": self.header_text},
-                "body": {"text": self.text},
+                "header": {
+                    "type": "text",
+                    "text": self.header_text,
+                },
+                "body": {
+                    "text": self.text,
+                },
+                "footer": {
+                    "text": "You may browse and shop right here on WhatsApp!",
+                },
                 "action": {
                     "catalog_id": self.catalog_id,
                     "sections": [
