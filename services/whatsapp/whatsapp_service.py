@@ -59,7 +59,7 @@ class WhatsAppService:
             else:
                 logger.info("user is not registered")
                 logger.info("checking if there's a session")
-                if self.session and self.session.payload.get("first_name", None):
+                if self.session and "first_name" in self.session.payload:
                     self.process_registration(self.session)
                     return
 
