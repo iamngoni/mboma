@@ -20,8 +20,14 @@ from services.whatsapp.reply_button import ReplyButton
 class WelcomeDialog(WhatsAppDialog):
     name: str = "welcome_dialog"
 
-    def dialog_message(self, incoming_message: WhatsAppMessageDTO):
-        logger.info(incoming_message)
+    def dialog_message(
+        self,
+        incoming_message: WhatsAppMessageDTO,
+        session: WhatsappSession,
+    ):
+        session.dialog_name = self.name
+        session.save()
+
         return InteractiveButtonMessage(
             text="Welcome to Tregers!!\n\nYou may browse our products catalog and purchase right here 📍 right now 🥳 "
             "on WhatsApp.\n\nTo continue use the options below 👇🏿👇🏿👇🏿",
@@ -39,7 +45,6 @@ class WelcomeDialog(WhatsAppDialog):
         self,
         incoming_message: WhatsAppMessageDTO,
         previous_dialog_name: Optional[str],
-        session: WhatsappSession,
     ):
         if not previous_dialog_name:
             return self

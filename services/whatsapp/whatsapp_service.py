@@ -84,7 +84,10 @@ class WhatsAppService:
                 logger.info("sending back menu")
                 message = WhatsappMessage(
                     payload=WelcomeDialog()
-                    .dialog_message(incoming_message=self.incoming_whatsapp_message)
+                    .dialog_message(
+                        incoming_message=self.incoming_whatsapp_message,
+                        session=self.session,
+                    )
                     .to_json()
                 )
                 message.send()
@@ -98,12 +101,11 @@ class WhatsAppService:
         if self.session:
             logger.info(f"session stage -> {self.session.stage}")
             previous_dialog = WhatsAppHelpers.get_previous_dialog(
-                self.incoming_whatsapp_message.previous_dialog_name
+                self.session.dialog_name
             )
             next_dialog = previous_dialog.next_dialog(
                 incoming_message=self.incoming_whatsapp_message,
                 previous_dialog_name=self.session.dialog_name,
-                session=self.session,
             )
 
             if previous_dialog:
@@ -115,7 +117,7 @@ class WhatsAppService:
 
             # set the next dialogs recipient phone number
             dialog_message = next_dialog.dialog_message(
-                incoming_message=self.incoming_whatsapp_message,
+                incoming_message=self.incoming_whatsapp_message, session=self.session
             )
             whatsapp_message = WhatsappMessage(payload=dialog_message.to_json())
             whatsapp_message.send()
@@ -159,7 +161,10 @@ class WhatsAppService:
         if session:
             message = WhatsappMessage(
                 payload=FirstNameDialog()
-                .dialog_message(incoming_message=self.incoming_whatsapp_message)
+                .dialog_message(
+                    incoming_message=self.incoming_whatsapp_message,
+                    session=self.session,
+                )
                 .to_json()
             )
             message.send()
@@ -230,7 +235,7 @@ class WhatsAppService:
                     next_dialog = EmailAddressDialog()
 
             dialog_message = next_dialog.dialog_message(
-                incoming_message=self.incoming_whatsapp_message,
+                incoming_message=self.incoming_whatsapp_message, session=self.session
             )
             whatsapp_message = WhatsappMessage(payload=dialog_message.to_json())
             whatsapp_message.send()

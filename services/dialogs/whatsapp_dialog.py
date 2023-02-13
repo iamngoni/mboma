@@ -13,13 +13,14 @@ from services.whatsapp.whatsapp_message import WhatsappMessage
 
 
 class WhatsAppDialog(ABC):
-    def dialog_message(self, incoming_message: WhatsAppMessageDTO):
+    def dialog_message(
+        self, incoming_message: WhatsAppMessageDTO, session: WhatsappSession
+    ):
         raise NotImplementedError
 
     def next_dialog(
         self,
         incoming_message: WhatsAppMessageDTO,
         previous_dialog_name: Optional[str],
-        session: WhatsappSession,
     ):
         raise NotImplementedError

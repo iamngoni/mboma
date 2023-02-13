@@ -15,7 +15,14 @@ from services.whatsapp.messages import TextMessage
 class LastNameDialog(WhatsAppDialog):
     name = "last_name_dialog"
 
-    def dialog_message(self, incoming_message: WhatsAppMessageDTO):
+    def dialog_message(
+        self,
+        incoming_message: WhatsAppMessageDTO,
+        session: WhatsappSession,
+    ):
+        session.dialog_name = self.name
+        session.save()
+
         return TextMessage(
             text="Please enter your last name...",
             phone_number=incoming_message.from_phone_number,
@@ -25,6 +32,5 @@ class LastNameDialog(WhatsAppDialog):
         self,
         incoming_message: WhatsAppMessageDTO,
         previous_dialog_name: Optional[str],
-        session: WhatsappSession,
     ):
         return EmailAddressDialog()

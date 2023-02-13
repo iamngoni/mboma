@@ -20,7 +20,14 @@ from loguru import logger
 class ProductsDialog(WhatsAppDialog):
     name = "products_dialog"
 
-    def dialog_message(self, incoming_message: WhatsAppMessageDTO):
+    def dialog_message(
+        self,
+        incoming_message: WhatsAppMessageDTO,
+        session: WhatsappSession,
+    ):
+        session.dialog_name = self.name
+        session.save()
+
         # get categories with more than one product
         categories = ProductCategory.objects.exclude(products__isnull=True)
         logger.info(f"Categories with products -> {categories}")
@@ -46,6 +53,5 @@ class ProductsDialog(WhatsAppDialog):
         self,
         incoming_message: WhatsAppMessageDTO,
         previous_dialog_name: Optional[str],
-        session: WhatsappSession,
     ):
         pass

@@ -16,7 +16,15 @@ from users.models import User
 class MyAccountDialog(WhatsAppDialog):
     name = "my_account_dialog"
 
-    def dialog_message(self, incoming_message: WhatsAppMessageDTO):
+    def dialog_message(
+        self,
+        incoming_message: WhatsAppMessageDTO,
+        session: WhatsappSession,
+    ):
+
+        session.dialog_name = self.name
+        session.save()
+
         user = User.get_user_by_phone_number(incoming_message.from_phone_number)
         if user:
             total_orders = user.orders.count()

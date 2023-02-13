@@ -16,7 +16,14 @@ from services.whatsapp.messages import TextMessage
 class EmailAddressDialog(WhatsAppDialog):
     name = "email_address_dialog"
 
-    def dialog_message(self, incoming_message: WhatsAppMessageDTO):
+    def dialog_message(
+        self,
+        incoming_message: WhatsAppMessageDTO,
+        session: WhatsappSession,
+    ):
+        session.dialog_name = self.name
+        session.save()
+
         return TextMessage(
             text="For communication and information updates enter your email address.\n\nPlease note that your email "
             "address will not be shared with any third party...",
@@ -27,6 +34,5 @@ class EmailAddressDialog(WhatsAppDialog):
         self,
         incoming_message: WhatsAppMessageDTO,
         previous_dialog_name: Optional[str],
-        session: WhatsappSession,
     ):
         return WelcomeDialog()

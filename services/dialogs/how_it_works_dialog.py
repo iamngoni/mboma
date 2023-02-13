@@ -14,7 +14,14 @@ from services.whatsapp.messages import TextMessage
 class HowItWorksDialog(WhatsAppDialog):
     name: str = "how_it_works_dialog"
 
-    def dialog_message(self, incoming_message: WhatsAppMessageDTO):
+    def dialog_message(
+        self,
+        incoming_message: WhatsAppMessageDTO,
+        session: WhatsappSession,
+    ):
+        session.dialog_name = self.name
+        session.save()
+
         return TextMessage(
             phone_number=incoming_message.from_phone_number,
             text=(
@@ -32,7 +39,6 @@ class HowItWorksDialog(WhatsAppDialog):
         self,
         incoming_message: WhatsAppMessageDTO,
         previous_dialog_name: Optional[str],
-        session: WhatsappSession,
     ):
         from services.dialogs.welcome_dialog import WelcomeDialog
 
