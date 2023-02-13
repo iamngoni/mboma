@@ -16,7 +16,7 @@ class HowItWorksDialog(WhatsAppDialog):
 
     def dialog_message(self, incoming_message: WhatsAppMessageDTO):
         return TextMessage(
-            phone_number=incoming_message.to_phone_number,
+            phone_number=incoming_message.from_phone_number,
             text=(
                 "Tregers ChatBot 🛒\nTregers chatbot is an online service portal offered via WhatsApp to allow for "
                 "Tregers customers to purchase products from the comfort of their homes and have the items delivered "
