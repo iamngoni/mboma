@@ -10,6 +10,7 @@ from loguru import logger
 from bot.models import WhatsappSession
 from services.dialogs.how_it_works_dialog import HowItWorksDialog
 from services.dialogs.my_account_dialog import MyAccountDialog
+from services.dialogs.my_orders_dialog import MyOrdersDialog
 from services.dialogs.products_dialog import ProductsDialog
 from services.dialogs.whatsapp_dialog import WhatsAppDialog
 from services.dtos.whatsapp_message import WhatsAppMessageDTO
@@ -55,8 +56,7 @@ class WelcomeDialog(WhatsAppDialog):
                     return ProductsDialog()
 
                 if option_selected == "my_orders":
-                    # todo: return my orders dialog
-                    pass
+                    return MyOrdersDialog()
 
                 if option_selected == "my_account":
                     return MyAccountDialog()
