@@ -118,13 +118,13 @@ class WhatsAppService:
     def send_greeting_message(self):
         image_payload = ImageMessage(
             phone_number=self.incoming_whatsapp_message.from_phone_number,
-            image_url="https://www.tregerproducts.com/wp-content/uploads/treger-products-logo.jpg",
+            image_url="https://tregerproducts.com/wp-content/uploads/2023/01/TG_collogo@0.5x.png",
         )
         image_message = WhatsappMessage(payload=image_payload.to_json())
         image_message.send()
 
         # wait for 3 seconds then send the text message
-        time.sleep(3)
+        time.sleep(2)
         payload = TextMessage(
             phone_number=self.incoming_whatsapp_message.from_phone_number,
             text="Welcome to Tregers, we're glad to have you here. Please wait while "
