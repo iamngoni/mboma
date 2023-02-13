@@ -30,9 +30,6 @@ class WelcomeDialog(WhatsAppDialog):
                 ReplyButton(
                     button_id="start_shopping_on_whatsapp", title="Shop on WhatsApp"
                 ),
-                ReplyButton(
-                    button_id="search_for_a_product", title="Look for a Product"
-                ),
                 ReplyButton(button_id="my_orders", title="My Orders"),
                 ReplyButton(button_id="my_account", title="My Account"),
             ],
@@ -51,10 +48,6 @@ class WelcomeDialog(WhatsAppDialog):
                 option_selected = incoming_message.button_reply.get("id")
                 if option_selected == "start_shopping_on_whatsapp":
                     return ProductsDialog()
-
-                if option_selected == "search_for_a_product":
-                    # todo: return search dialog
-                    pass
 
                 if option_selected == "my_orders":
                     # todo: return my orders dialog
