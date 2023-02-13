@@ -59,12 +59,13 @@ class WhatsAppService:
             else:
                 logger.info("user is not registered")
                 logger.info("checking if there's a session")
-                if self.session and "first_name" in self.session.payload:
-                    self.process_registration(self.session)
+                if self.session and self.session.stage == "registration":
+                    self.process_registration()
                     return
 
                 self.send_greeting_message()
                 self.register_user()
+                return
         except Exception as exc:
             logger.error(f"Failed to process incoming message -> {exc}")
             self.send_error_message()
@@ -159,20 +160,18 @@ class WhatsAppService:
             self.incoming_whatsapp_message.from_phone_number,
         )
         if session:
-            message = WhatsappMessage(
-                payload=FirstNameDialog()
-                .dialog_message(
-                    incoming_message=self.incoming_whatsapp_message,
-                    session=self.session,
-                )
-                .to_json()
+            dialog = FirstNameDialog()
+            dialog_message = dialog.dialog_message(
+                incoming_message=self.incoming_whatsapp_message,
+                session=self.session,
             )
+            message = WhatsappMessage(payload=dialog_message.to_json())
             message.send()
         else:
             self.send_error_message()
             return
 
-    def process_registration(self, session):
+    def process_registration(self):
         try:
 
             previous_dialog = WhatsAppHelpers.get_previous_dialog(
@@ -186,13 +185,17 @@ class WhatsAppService:
 
             if previous_dialog.name == "first_name_dialog":
                 logger.info("saving first name")
-                session.payload["first_name"] = self.incoming_whatsapp_message.message
-                session.save()
+                self.session.payload[
+                    "first_name"
+                ] = self.incoming_whatsapp_message.message
+                self.session.save()
 
             if previous_dialog.name == "last_name_dialog":
                 logger.info("saving last name")
-                session.payload["last_name"] = self.incoming_whatsapp_message.message
-                session.save()
+                self.session.payload[
+                    "last_name"
+                ] = self.incoming_whatsapp_message.message
+                self.session.save()
 
             if previous_dialog.name == "email_address_dialog":
                 logger.info("saving email address")
@@ -200,24 +203,24 @@ class WhatsAppService:
                 regex = "^[a-z0-9]+[\._]?[a-z0-9]+[@]\w+[.]\w{2,3}$"
                 if re.search(regex, email):
                     logger.info("Valid Email")
-                    session.payload["email_address"] = email
-                    session.save()
+                    self.session.payload["email_address"] = email
+                    self.session.save()
 
                     # generate password
                     password = generate_random_password()
 
                     # generate username
                     username = create_username(
-                        first_name=session.payload.get("first_name"),
-                        last_name=session.payload.get("last_name"),
+                        first_name=self.session.payload.get("first_name"),
+                        last_name=self.session.payload.get("last_name"),
                     )
 
                     # create user using details saved in session object
                     User.create_user(
                         username=username,
-                        first_name=session.payload.get("first_name"),
-                        last_name=session.payload.get("last_name"),
-                        email=session.payload.get("email_address"),
+                        first_name=self.session.payload.get("first_name"),
+                        last_name=self.session.payload.get("last_name"),
+                        email=self.session.payload.get("email_address"),
                         phone_number=self.incoming_whatsapp_message.from_phone_number,
                         role=UserRoles.CUSTOMER,
                         source="bot",

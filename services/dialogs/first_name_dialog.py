@@ -20,6 +20,7 @@ class FirstNameDialog(WhatsAppDialog):
         incoming_message: WhatsAppMessageDTO,
         session: WhatsappSession,
     ):
+        session.stage = "registration"
         session.dialog_name = self.name
         session.save()
 
