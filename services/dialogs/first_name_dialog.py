@@ -25,7 +25,7 @@ class FirstNameDialog(WhatsAppDialog):
         session.save()
 
         return TextMessage(
-            text="Lets get to know each other, please enter your first name...",
+            text="Lets get to know each other, please *enter your first name*...",
             phone_number=incoming_message.from_phone_number,
         )
 

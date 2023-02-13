@@ -25,7 +25,7 @@ class EmailAddressDialog(WhatsAppDialog):
         session.save()
 
         return TextMessage(
-            text="For communication and information updates enter your email address.\n\nPlease note that your email "
+            text="For communication and information updates *enter your email address*.\n\nPlease note that your email "
             "address will not be shared with any third party...",
             phone_number=incoming_message.from_phone_number,
         )

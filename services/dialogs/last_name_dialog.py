@@ -24,7 +24,7 @@ class LastNameDialog(WhatsAppDialog):
         session.save()
 
         return TextMessage(
-            text="Please enter your last name...",
+            text="Please *enter your last name*...",
             phone_number=incoming_message.from_phone_number,
         )
 
