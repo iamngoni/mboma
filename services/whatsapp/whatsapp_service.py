@@ -73,30 +73,17 @@ class WhatsAppService:
             return
 
     def process_text_message(self):
-        session = WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
-            self.incoming_whatsapp_message.from_phone_number
+        logger.info("sending back menu")
+        message = WhatsappMessage(
+            payload=WelcomeDialog()
+            .dialog_message(
+                incoming_message=self.incoming_whatsapp_message,
+                session=self.session,
+            )
+            .to_json()
         )
-        if session:
-            logger.info("has session")
-            if session.stage == "registration":
-                logger.info("sending to process registration")
-                return self.process_registration(session)
-            else:
-                logger.info("sending back menu")
-                message = WhatsappMessage(
-                    payload=WelcomeDialog()
-                    .dialog_message(
-                        incoming_message=self.incoming_whatsapp_message,
-                        session=self.session,
-                    )
-                    .to_json()
-                )
-                message.send()
-                return
-        else:
-            logger.error("failed to get or create session")
-            self.send_error_message()
-            return
+        message.send()
+        return
 
     def process_interactive_message(self):
         if self.session:
@@ -180,7 +167,6 @@ class WhatsAppService:
             next_dialog = previous_dialog.next_dialog(
                 incoming_message=self.incoming_whatsapp_message,
                 previous_dialog_name=self.session.dialog_name,
-                session=self.session,
             )
 
             if previous_dialog.name == "first_name_dialog":
