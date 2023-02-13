@@ -59,7 +59,7 @@ class WhatsAppService:
             else:
                 logger.info("user is not registered")
                 logger.info("checking if there's a session")
-                if self.session and self.session.stage == "registration":
+                if self.session and self.session.payload.get("first_name", None):
                     self.process_registration(self.session)
                     return
 
@@ -140,7 +140,7 @@ class WhatsAppService:
         payload = TextMessage(
             phone_number=self.incoming_whatsapp_message.from_phone_number,
             text="Welcome to Tregers, we're glad to have you here. Please wait while "
-            "we get you started",
+            "we get you started.",
         )
         message = WhatsappMessage(payload=payload.to_json())
         message.send()
