@@ -21,6 +21,7 @@ class WelcomeDialog(WhatsAppDialog):
     name: str = "welcome_dialog"
 
     def dialog_message(self, incoming_message: WhatsAppMessageDTO):
+        logger.info(incoming_message)
         return InteractiveButtonMessage(
             text="Welcome to Tregers!!\n\nYou may browse our products catalog and purchase right here 📍 right now 🥳 "
             "on WhatsApp.\n\nTo continue use the options below 👇🏿👇🏿👇🏿",
