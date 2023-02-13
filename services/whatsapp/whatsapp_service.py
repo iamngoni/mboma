@@ -160,9 +160,8 @@ class WhatsAppService:
 
     def process_registration(self):
         try:
-
             previous_dialog = WhatsAppHelpers.get_previous_dialog(
-                self.incoming_whatsapp_message.previous_dialog_name
+                self.session.dialog_name
             )
             next_dialog = previous_dialog.next_dialog(
                 incoming_message=self.incoming_whatsapp_message,
@@ -222,6 +221,8 @@ class WhatsAppService:
                     message.send()
                 else:
                     next_dialog = EmailAddressDialog()
+
+            logger.info(next_dialog)
 
             dialog_message = next_dialog.dialog_message(
                 incoming_message=self.incoming_whatsapp_message, session=self.session
