@@ -25,7 +25,7 @@ class WelcomeDialog(WhatsAppDialog):
         return InteractiveButtonMessage(
             text="Welcome to Tregers!!\n\nYou may browse our products catalog and purchase right here 📍 right now 🥳 "
             "on WhatsApp.\n\nTo continue use the options below 👇🏿👇🏿👇🏿",
-            phone_number=incoming_message.to_phone_number,
+            phone_number=incoming_message.from_phone_number,
             buttons=[
                 ReplyButton(
                     button_id="start_shopping_on_whatsapp", title="Shop on WhatsApp"
