@@ -27,7 +27,7 @@ class ProductQuantityDialog(WhatsAppDialog):
         session.dialog_name = self.name
         session.save()
 
-        product = Product.objects.get(id=session.paylod.get("product_id"))
+        product = Product.objects.get(id=session.payload.get("product_id"))
 
         return InteractiveListMessage(
             phone_number=incoming_message.from_phone_number,
