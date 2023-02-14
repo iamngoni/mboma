@@ -6,6 +6,8 @@
 
 from typing import Optional
 
+from loguru import logger
+
 from bot.models import WhatsappSession
 from services.dialogs.payment_dialog import PaymentDialog
 from services.dialogs.payment_number_dialog import PaymentNumberDialog
@@ -44,9 +46,12 @@ class PhoneNumberQuestionDialog(WhatsAppDialog):
         if option_selected == "current_number":
             session.payload["payment_number"] = incoming_message.from_phone_number
             session.save()
+            logger.info(f"updated session to add phone number: {session}")
             return PaymentDialog()
 
         if option_selected == "other":
             session.stage = "payment"
             session.save()
+            logger.info(f"updated session to change stage: {session}")
+
             return PaymentNumberDialog()

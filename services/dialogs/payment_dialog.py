@@ -36,11 +36,14 @@ class PaymentDialog(WhatsAppDialog):
                 f"{cart_item.quantity} x {cart_item.product.name} ${cart_item.total}\n"
             )
 
+        logger.info(narration)
+        logger.info(session)
+
         # create order
         order = Order(
             user=user,
             amount=user.cart.total,
-            payment_method=session.payload.get("payment_method"),
+            payment_method=session.payload.get("payment_method", "ecocash"),
             narration=narration,
         )
         order.save()
@@ -58,7 +61,7 @@ class PaymentDialog(WhatsAppDialog):
         response = paynow.send_mobile(
             payment=payment,
             phone=session.payload.get("payment_number"),
-            method=session.payload.get("payment_method"),
+            method=session.payload.get("payment_method", "ecocash"),
         )
         logger.info(response)
         if response.success:

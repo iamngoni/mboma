@@ -46,6 +46,6 @@ class PaymentMethodDialog(WhatsAppDialog):
         session.payload["payment_method"] = option_selected
         session.save()
 
-        logger.info(session)
+        logger.info(f"updated session to add payment method: {session}")
 
         return PhoneNumberQuestionDialog()
