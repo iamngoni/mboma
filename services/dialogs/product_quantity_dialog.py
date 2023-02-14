@@ -3,7 +3,7 @@
 #  mboma
 #
 #  Created by Ngonidzashe Mangudya on 14/2/2023.
-
+import math
 from typing import Optional
 
 from loguru import logger
@@ -29,6 +29,14 @@ class ProductQuantityDialog(WhatsAppDialog):
         session.save()
 
         product = Product.objects.get(id=session.payload.get("product_id"))
+        step = 1
+        inventory_range = product.inventory.quantity + 1
+        if inventory_range > 10:
+            inventory_range_div_10 = inventory_range / 10
+            logger.info(inventory_range_div_10)
+            # get the floor value of inventory_range_div_10
+            step = math.ceil(inventory_range_div_10)
+            logger.info(f"Using {step} as step value instead of 1")
 
         return InteractiveListMessage(
             phone_number=incoming_message.from_phone_number,
@@ -39,7 +47,7 @@ class ProductQuantityDialog(WhatsAppDialog):
                 InteractiveRow(
                     id=f"{number}", title=f"{number}", description=f"{number} item(s)"
                 )
-                for number in range(0, product.inventory.quantity + 1)
+                for number in range(0, inventory_range, step)
             ],
         )
 
