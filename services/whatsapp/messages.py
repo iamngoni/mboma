@@ -235,5 +235,5 @@ class ReactionMessage:
             "recipient_type": "individual",
             "to": self.phone_number,
             "type": "reaction",
-            "reaction": {"message_id": self.message_id, "emoji": "👀"},
+            "reaction": {"message_id": self.message_id, "emoji": "⏳"},
         }
