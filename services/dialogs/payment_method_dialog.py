@@ -6,6 +6,8 @@
 
 from typing import Optional
 
+from loguru import logger
+
 from bot.models import WhatsappSession
 from services.dialogs.phone_number_question_dialog import PhoneNumberQuestionDialog
 from services.dialogs.whatsapp_dialog import WhatsAppDialog
@@ -36,11 +38,14 @@ class PaymentMethodDialog(WhatsAppDialog):
         self, incoming_message: WhatsAppMessageDTO, previous_dialog_name: Optional[str]
     ):
         option_selected = incoming_message.button_reply.get("id")
+        logger.info(f"payment method -> {option_selected}")
 
         session = WhatsappSession.create_whatsapp_session_or_get_whatsapp_session(
             incoming_message.from_phone_number
         )
         session.payload["payment_method"] = option_selected
         session.save()
+
+        logger.info(session)
 
         return PhoneNumberQuestionDialog()
