@@ -91,10 +91,12 @@ class WhatsAppService:
     def process_interactive_message(self):
         if self.session:
             logger.info(f"session stage -> {self.session.stage}")
+
             previous_dialog = WhatsAppHelpers.get_previous_dialog(
                 self.session.dialog_name
             )
             logger.info(previous_dialog)
+
             next_dialog = previous_dialog.next_dialog(
                 incoming_message=self.incoming_whatsapp_message,
                 previous_dialog_name=self.session.dialog_name,
@@ -103,9 +105,7 @@ class WhatsAppService:
 
             if previous_dialog:
                 logger.info(
-                    "***transition from dialog : %s to next dialog : %s",
-                    previous_dialog.name,
-                    next_dialog.name,
+                    f"***transition from dialog : {previous_dialog.name} to next dialog : {next_dialog.name}",
                 )
 
             # set the next dialogs recipient phone number

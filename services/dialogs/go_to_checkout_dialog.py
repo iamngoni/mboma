@@ -22,6 +22,9 @@ class GoToCheckoutDialog(WhatsAppDialog):
     def dialog_message(
         self, incoming_message: WhatsAppMessageDTO, session: WhatsappSession
     ):
+        session.dialog_name = self.name
+        session.save()
+
         return InteractiveButtonMessage(
             phone_number=incoming_message.from_phone_number,
             text="You can checkout now or add more products to your cart",
@@ -34,12 +37,15 @@ class GoToCheckoutDialog(WhatsAppDialog):
     def next_dialog(
         self, incoming_message: WhatsAppMessageDTO, previous_dialog_name: Optional[str]
     ):
-        option_selected = incoming_message.button_reply.get("id")
+        if incoming_message.button_reply:
+            option_selected = incoming_message.button_reply.get("id")
 
-        if option_selected == "checkout":
-            logger.info("Going to confirm order")
-            return ConfirmOrderDialog()
+            if option_selected == "checkout":
+                logger.info("Going to confirm order")
+                return ConfirmOrderDialog()
 
-        if option_selected == "add_more_products":
-            logger.info("Going to confirm order")
-            return ProductCategoriesDialog()
+            if option_selected == "add_more_products":
+                logger.info("Going to confirm order")
+                return ProductCategoriesDialog()
+        else:
+            logger.error("panic!!! wtf")
