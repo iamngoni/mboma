@@ -8,7 +8,6 @@ from typing import Optional
 from loguru import logger
 
 from bot.models import WhatsappSession
-from services.dialogs.catalog_products_dialog import CatalogProductsDialog
 from services.dialogs.whatsapp_dialog import WhatsAppDialog
 from services.dtos.whatsapp_message import WhatsAppMessageDTO
 from services.whatsapp.interactive_row import InteractiveRow
@@ -51,4 +50,6 @@ class ProductCategoriesDialog(WhatsAppDialog):
     def next_dialog(
         self, incoming_message: WhatsAppMessageDTO, previous_dialog_name: Optional[str]
     ):
+        from services.dialogs.catalog_products_dialog import CatalogProductsDialog
+
         return CatalogProductsDialog()

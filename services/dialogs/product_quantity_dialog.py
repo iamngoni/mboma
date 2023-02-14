@@ -9,6 +9,7 @@ from typing import Optional
 from loguru import logger
 
 from bot.models import WhatsappSession
+from services.dialogs.go_to_checkout_dialog import GoToCheckoutDialog
 from services.dialogs.whatsapp_dialog import WhatsAppDialog
 from services.dtos.whatsapp_message import WhatsAppMessageDTO
 from services.whatsapp.interactive_row import InteractiveRow
@@ -65,11 +66,7 @@ class ProductQuantityDialog(WhatsAppDialog):
                 )
                 WhatsappMessage(text_message.to_json()).send()
 
-                from services.dialogs.product_categories_dialog import (
-                    ProductCategoriesDialog,
-                )
-
-                return ProductCategoriesDialog()
+                return GoToCheckoutDialog()
             else:
                 logger.error("panic!!! no user")
         else:
