@@ -226,7 +226,6 @@ class ReactionMessage:
         phone_number: str,
         message_id: str,
     ):
-
         self.phone_number = phone_number
         self.message_id = message_id
 
