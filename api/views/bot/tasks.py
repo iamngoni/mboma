@@ -4,28 +4,26 @@ from loguru import logger
 from decouple import config
 import requests
 
+from services.whatsapp.messages import ReactionMessage
+from services.whatsapp.whatsapp_message import WhatsappMessage
+
 
 @job("default", retry=Retry(max=3))
-def mark_message_as_read(message_id: str):
+def mark_message_as_read(message_id: str, phone_number: str):
     try:
-        headers = {
-            "Authorization": f'Bearer {config("WHATSAPP_TOKEN")}',
-            "Content-Type": "application/json",
-        }
-
         payload = {
             "messaging_product": "whatsapp",
             "status": "read",
             "message_id": message_id,
         }
-        logger.info(f"send payload back to whatsapp -> {payload}")
 
-        response = requests.request(
-            "POST",
-            f"{config('WHATSAPP_URL')}/{config('WHATSAPP_ID')}/messages",
-            headers=headers,
-            data=payload,
-        )
-        logger.info(f"response from whatsapp -> {response.text}")
+        # blue tick
+        WhatsappMessage(payload).send()
+
+        # funny reaction
+        WhatsappMessage(
+            ReactionMessage(phone_number=phone_number, message_id=message_id).to_json()
+        ).send()
+
     except Exception as exc:
         logger.error(f"Error marking message as read: {exc}")

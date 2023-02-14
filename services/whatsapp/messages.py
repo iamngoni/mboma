@@ -218,3 +218,23 @@ class ProductsMessage:
                 },
             },
         }
+
+
+class ReactionMessage:
+    def __init__(
+        self,
+        phone_number: str,
+        message_id: str,
+    ):
+
+        self.phone_number = phone_number
+        self.message_id = message_id
+
+    def to_json(self) -> dict:
+        return {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": self.phone_number,
+            "type": "reaction",
+            "reaction": {"message_id": self.phone_number, "emoji": "👀"},
+        }
