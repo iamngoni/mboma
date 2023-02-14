@@ -17,6 +17,7 @@ from services.whatsapp.messages import (
     TextMessage,
     ImageMessage,
     InteractiveProductButtonsMessage,
+    InteractiveButtonMessage,
 )
 from services.whatsapp.reply_button import ReplyButton
 from services.whatsapp.whatsapp_message import WhatsappMessage
@@ -43,32 +44,25 @@ class ProductDialog(WhatsAppDialog):
                     phone_number=incoming_message.from_phone_number,
                 )
                 message = WhatsappMessage(payload=image_message.to_json())
-                message_id = message.send()
+                message.send()
 
                 # wait for image to be sent
                 time.sleep(1)
 
-                if message_id:
-                    return InteractiveProductButtonsMessage(
-                        phone_number=incoming_message.from_phone_number,
-                        message_id=message_id,
-                        text=f"*🛍️ {product.name}*\n\n**Description**\n{product.description}\n\nAvailable: "
-                        f"{product.inventory.quantity}\nPrice: *${product.price}*",
-                        buttons=[
-                            ReplyButton(button_id="add_to_cart", title="🛒Add To Cart"),
-                            ReplyButton(
-                                button_id="back_to_products", title="⏪Category Products"
-                            ),
-                            ReplyButton(
-                                button_id="back_to_categories", title="⏮️Categories"
-                            ),
-                        ],
-                    )
-                else:
-                    return TextMessage(
-                        phone_number=incoming_message.from_phone_number,
-                        text="Failed to work on your request. Please try again.",
-                    )
+                return InteractiveButtonMessage(
+                    phone_number=incoming_message.from_phone_number,
+                    text=f"*🛍️ {product.name}*\n\n**Description**\n{product.description}\n\nAvailable: "
+                    f"{product.inventory.quantity}\nPrice: *${product.price}*",
+                    buttons=[
+                        ReplyButton(button_id="add_to_cart", title="🛒Add To Cart"),
+                        ReplyButton(
+                            button_id="back_to_products", title="⏪Category Products"
+                        ),
+                        ReplyButton(
+                            button_id="back_to_categories", title="⏮️Categories"
+                        ),
+                    ],
+                )
 
             except Product.DoesNotExist:
                 return TextMessage(
