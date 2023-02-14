@@ -9,11 +9,12 @@ from services.dialogs.email_address_dialog import EmailAddressDialog
 from services.dialogs.first_name_dialog import FirstNameDialog
 from services.dialogs.go_to_checkout_dialog import GoToCheckoutDialog
 from services.dialogs.how_it_works_dialog import HowItWorksDialog
-from services.dialogs.instructions_dialog import InstructionsDialog
 from services.dialogs.last_name_dialog import LastNameDialog
 from services.dialogs.my_account_dialog import MyAccountDialog
 from services.dialogs.my_orders_dialog import MyOrdersDialog
+from services.dialogs.payment_dialog import PaymentDialog
 from services.dialogs.payment_method_dialog import PaymentMethodDialog
+from services.dialogs.phone_number_question_dialog import PhoneNumberQuestionDialog
 from services.dialogs.product_categories_dialog import ProductCategoriesDialog
 from services.dialogs.product_dialog import ProductDialog
 from services.dialogs.product_quantity_dialog import ProductQuantityDialog
@@ -104,7 +105,8 @@ class WhatsAppHelpers:
             "go_to_checkout_dialog": GoToCheckoutDialog(),
             "confirm_order_dialog": ConfirmOrderDialog(),
             "payment_method_dialog": PaymentMethodDialog(),
-            "instructions_dialog": InstructionsDialog(),
+            "phone_number_question_dialog": PhoneNumberQuestionDialog(),
+            "payment_dialog": PaymentDialog(),
         }
 
     @staticmethod
