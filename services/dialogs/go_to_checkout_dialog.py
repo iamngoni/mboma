@@ -5,6 +5,8 @@
 #  Created by Ngonidzashe Mangudya on 14/2/2023.
 from typing import Optional
 
+from loguru import logger
+
 from bot.models import WhatsappSession
 from services.dialogs.confirm_order_dialog import ConfirmOrderDialog
 from services.dialogs.product_categories_dialog import ProductCategoriesDialog
@@ -33,8 +35,11 @@ class GoToCheckoutDialog(WhatsAppDialog):
         self, incoming_message: WhatsAppMessageDTO, previous_dialog_name: Optional[str]
     ):
         option_selected = incoming_message.button_reply.get("id")
+
         if option_selected == "checkout":
+            logger.info("Going to confirm order")
             return ConfirmOrderDialog()
 
         if option_selected == "add_more_products":
+            logger.info("Going to confirm order")
             return ProductCategoriesDialog()

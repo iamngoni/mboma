@@ -6,6 +6,8 @@
 
 from typing import Optional
 
+from loguru import logger
+
 from bot.models import WhatsappSession
 from services.dialogs.payment_method_dialog import PaymentMethodDialog
 from services.dialogs.welcome_dialog import WelcomeDialog
@@ -32,6 +34,8 @@ class ConfirmOrderDialog(WhatsAppDialog):
             for cart_item in user.cart.items.all():
                 cart_text += f"{cart_item.quantity} x {cart_item.product.name} ${cart_item.total}\n"
 
+            logger.info(cart_text)
+
             return InteractiveButtonMessage(
                 phone_number=incoming_message.from_phone_number,
                 text=f"*🛍️ Cart*\n\n{cart_text}\nTotal: ${user.cart.total}",
@@ -53,6 +57,7 @@ class ConfirmOrderDialog(WhatsAppDialog):
         self, incoming_message: WhatsAppMessageDTO, previous_dialog_name: Optional[str]
     ):
         option_selected = incoming_message.button_reply.get("id")
+        logger.info(option_selected)
 
         if option_selected == "confirm":
             return PaymentMethodDialog()
