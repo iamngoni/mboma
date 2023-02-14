@@ -47,6 +47,6 @@ class PhoneNumberQuestionDialog(WhatsAppDialog):
             return PaymentDialog()
 
         if option_selected == "other":
-            session.stage == "payment"
+            session.stage = "payment"
             session.save()
             return PaymentNumberDialog()

@@ -43,6 +43,8 @@ class WhatsAppService:
                 logger.info("user is registered")
                 if self.incoming_whatsapp_message.message_type == "text":
                     logger.info("processing text message")
+                    if self.session.stage == "payment":
+                        return self.process_interactive_message()
                     # process text message
                     return self.process_text_message()
                 elif self.incoming_whatsapp_message.message_type == "interactive":
