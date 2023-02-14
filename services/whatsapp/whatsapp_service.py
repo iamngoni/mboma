@@ -94,10 +94,12 @@ class WhatsAppService:
             previous_dialog = WhatsAppHelpers.get_previous_dialog(
                 self.session.dialog_name
             )
+            logger.info(previous_dialog)
             next_dialog = previous_dialog.next_dialog(
                 incoming_message=self.incoming_whatsapp_message,
                 previous_dialog_name=self.session.dialog_name,
             )
+            logger.info(next_dialog)
 
             if previous_dialog:
                 logger.info(
@@ -110,6 +112,7 @@ class WhatsAppService:
             dialog_message = next_dialog.dialog_message(
                 incoming_message=self.incoming_whatsapp_message, session=self.session
             )
+            logger.ifno(dialog_message)
             whatsapp_message = WhatsappMessage(payload=dialog_message.to_json())
             whatsapp_message.send()
             return
