@@ -11,6 +11,7 @@ from bot.models import WhatsappSession
 from services.dialogs.how_it_works_dialog import HowItWorksDialog
 from services.dialogs.my_account_dialog import MyAccountDialog
 from services.dialogs.my_orders_dialog import MyOrdersDialog
+from services.dialogs.product_categories_dialog import ProductCategoriesDialog
 from services.dialogs.products_dialog import ProductsDialog
 from services.dialogs.whatsapp_dialog import WhatsAppDialog
 from services.dtos.whatsapp_message import WhatsAppMessageDTO
@@ -53,7 +54,9 @@ class WelcomeDialog(WhatsAppDialog):
             if incoming_message.button_reply:
                 option_selected = incoming_message.button_reply.get("id")
                 if option_selected == "start_shopping_on_whatsapp":
-                    return ProductsDialog()
+                    # commented out because whatsapp couldn't allow me to continue with this method
+                    # return ProductsDialog()
+                    return ProductCategoriesDialog()
 
                 if option_selected == "my_orders":
                     return MyOrdersDialog()

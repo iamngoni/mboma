@@ -9,6 +9,7 @@ from services.dialogs.how_it_works_dialog import HowItWorksDialog
 from services.dialogs.last_name_dialog import LastNameDialog
 from services.dialogs.my_account_dialog import MyAccountDialog
 from services.dialogs.my_orders_dialog import MyOrdersDialog
+from services.dialogs.product_categories_dialog import ProductCategoriesDialog
 from services.dialogs.products_dialog import ProductsDialog
 from services.dialogs.welcome_dialog import WelcomeDialog
 from services.dtos.whatsapp_message import WhatsAppMessageDTO
@@ -89,6 +90,7 @@ class WhatsAppHelpers:
             "last_name_dialog": LastNameDialog(),
             "email_address_dialog": EmailAddressDialog(),
             "my_orders_dialog": MyOrdersDialog(),
+            "product_categories_dialog": ProductCategoriesDialog(),
         }
 
     @staticmethod
