@@ -38,7 +38,7 @@ class ProductDialog(WhatsAppDialog):
         if input_id:
             try:
                 product = Product.objects.get(id=input_id)
-                session.paylod["product_id"] = product.id
+                session.payload["product_id"] = product.id
                 session.save()
 
                 # send product image
