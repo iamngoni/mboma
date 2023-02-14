@@ -7,6 +7,7 @@
 import time
 from typing import Optional
 
+from decouple import config
 from loguru import logger
 
 from bot.models import WhatsappSession
@@ -38,7 +39,7 @@ class ProductDialog(WhatsAppDialog):
 
                 # send product image
                 image_message = ImageMessage(
-                    image_url="",
+                    image_url=f"{config('ORIGIN')}{product.image.url}",
                     phone_number=incoming_message.from_phone_number,
                 )
                 message = WhatsappMessage(payload=image_message.to_json())
