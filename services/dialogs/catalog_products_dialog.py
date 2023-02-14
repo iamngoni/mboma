@@ -35,7 +35,7 @@ class CatalogProductsDialog(WhatsAppDialog):
                         rows=[
                             InteractiveRow(
                                 id=product.id,
-                                title=product.name,
+                                title=product.name[:24],
                                 description=product.name,
                             )
                             for product in products
