@@ -52,3 +52,10 @@ class WhatsAppView(APIView):
         except Exception as e:
             logger.error(f"Error: {e}")
             return HttpResponse("Error", 500)
+
+
+class PaynowView(APIView):
+    parser_classes = (JSONParser,)
+
+    def post(self, request):
+        pass

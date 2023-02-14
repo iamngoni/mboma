@@ -51,20 +51,17 @@ class WelcomeDialog(WhatsAppDialog):
         if not previous_dialog_name:
             return self
         else:
-            if incoming_message.button_reply:
-                option_selected = incoming_message.button_reply.get("id")
-                if option_selected == "start_shopping_on_whatsapp":
-                    # commented out because whatsapp couldn't allow me to continue with this method
-                    # return ProductsDialog()
-                    return ProductCategoriesDialog()
+            option_selected = incoming_message.button_reply.get("id")
+            if option_selected == "start_shopping_on_whatsapp":
+                # commented out because whatsapp couldn't allow me to continue with this method
+                # return ProductsDialog()
+                return ProductCategoriesDialog()
 
-                if option_selected == "my_orders":
-                    return MyOrdersDialog()
+            if option_selected == "my_orders":
+                return MyOrdersDialog()
 
-                if option_selected == "my_account":
-                    return MyAccountDialog()
+            if option_selected == "my_account":
+                return MyAccountDialog()
 
-                if option_selected == "how_it_works":
-                    return HowItWorksDialog()
-            else:
-                logger.error("panic! weird response")
+            if option_selected == "how_it_works":
+                return HowItWorksDialog()

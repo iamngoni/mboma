@@ -38,7 +38,7 @@ class ProductQuantityDialog(WhatsAppDialog):
                 InteractiveRow(
                     id=f"{number}", title=f"{number}", description=f"{number} item(s)"
                 )
-                for number in range(1, product.inventory.quantity + 1)
+                for number in range(0, product.inventory.quantity + 1)
             ],
         )
 

@@ -98,11 +98,15 @@ class Order(SoftDeleteModel):
         null=False,
         blank=False,
     )
+    amount = models.FloatField(default=0, blank=False, null=False)
+    paid = models.BooleanField(default=False, blank=False, null=False)
+    payment_method = models.CharField(max_length=10, blank=False, null=False)
+    narration = models.TextField(blank=False, null=False)
 
     class Meta:
         verbose_name = "Order"
         verbose_name_plural = "Orders"
-        table_prefix = "o"
+        table_prefix = "ord"
 
 
 class Cart(SoftDeleteModel):
@@ -143,6 +147,14 @@ class Cart(SoftDeleteModel):
             cart_item.save()
             return cart_item
 
+    @property
+    def total(self):
+        amount = 0
+        for item in self.items.all():
+            amount += item.product.price
+
+        return amount
+
 
 class CartItem(SoftDeleteModel):
     cart = models.ForeignKey(
@@ -164,3 +176,7 @@ class CartItem(SoftDeleteModel):
         verbose_name = "Cart Item"
         verbose_name_plural = "Cart Items"
         table_prefix = "shcart_itm"
+
+    @property
+    def total(self):
+        return self.quantity * self.product.price
