@@ -151,7 +151,7 @@ class Cart(SoftDeleteModel):
     def total(self):
         amount = 0
         for item in self.items.all():
-            amount += item.product.price
+            amount += item.product.price * item.quantity
 
         return amount
 
