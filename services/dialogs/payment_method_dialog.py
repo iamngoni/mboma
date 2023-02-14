@@ -6,6 +6,7 @@
 
 from typing import Optional
 
+from decouple import config
 from loguru import logger
 
 from bot.models import WhatsappSession
@@ -61,8 +62,8 @@ class PaymentMethodDialog(WhatsAppDialog):
         order.save()
 
         paynow = Paynow(
-            "8379",
-            "INTEGRATION_KEY",
+            config("PAYNOW_ID"),
+            config("PAYNOW_KEY"),
             "https://google.com",
             "https://mboma.modestnerd.co/api/1.0/paynow",
         )
