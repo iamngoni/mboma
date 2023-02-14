@@ -112,7 +112,7 @@ class WhatsAppService:
             dialog_message = next_dialog.dialog_message(
                 incoming_message=self.incoming_whatsapp_message, session=self.session
             )
-            logger.ifno(dialog_message)
+            logger.info(dialog_message)
             whatsapp_message = WhatsappMessage(payload=dialog_message.to_json())
             whatsapp_message.send()
             return
