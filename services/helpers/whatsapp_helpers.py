@@ -3,6 +3,7 @@
 #  mboma
 #
 #  Created by Ngonidzashe Mangudya on 12/2/2023.
+from services.dialogs.catalog_products_dialog import CatalogProductsDialog
 from services.dialogs.email_address_dialog import EmailAddressDialog
 from services.dialogs.first_name_dialog import FirstNameDialog
 from services.dialogs.how_it_works_dialog import HowItWorksDialog
@@ -91,6 +92,7 @@ class WhatsAppHelpers:
             "email_address_dialog": EmailAddressDialog(),
             "my_orders_dialog": MyOrdersDialog(),
             "product_categories_dialog": ProductCategoriesDialog(),
+            "catalog_products_dialog": CatalogProductsDialog(),
         }
 
     @staticmethod

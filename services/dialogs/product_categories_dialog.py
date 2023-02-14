@@ -8,6 +8,7 @@ from typing import Optional
 from loguru import logger
 
 from bot.models import WhatsappSession
+from services.dialogs.catalog_products_dialog import CatalogProductsDialog
 from services.dialogs.whatsapp_dialog import WhatsAppDialog
 from services.dtos.whatsapp_message import WhatsAppMessageDTO
 from services.whatsapp.interactive_row import InteractiveRow
@@ -30,9 +31,7 @@ class ProductCategoriesDialog(WhatsAppDialog):
 
         category_names_concatenated = ""
         for index, category in enumerate(categories):
-            category_names_concatenated += (
-                f"*{category.name}*{' and' if index == categories.count() - 1 else ','}"
-            )
+            category_names_concatenated += f"*{category.name}*{' and' if index == categories.count() - 2 else ', ' if index < categories.count() - 1 else ''}"
 
         logger.info(category_names_concatenated)
 
@@ -52,4 +51,4 @@ class ProductCategoriesDialog(WhatsAppDialog):
     def next_dialog(
         self, incoming_message: WhatsAppMessageDTO, previous_dialog_name: Optional[str]
     ):
-        pass
+        return CatalogProductsDialog()
