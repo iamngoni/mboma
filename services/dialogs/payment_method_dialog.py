@@ -76,6 +76,7 @@ class PaymentMethodDialog(WhatsAppDialog):
             phone=incoming_message.from_phone_number,
             method=option_selected,
         )
+        logger.info(response)
+
         if response.success:
-            logger.info(response.instructions)
             return InstructionsDialog()
