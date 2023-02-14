@@ -31,4 +31,17 @@ class WhatsappMessage:
             headers=headers,
             data=payload,
         )
-        logger.info(f"response from whatsapp -> {response.text}")
+
+        # if successful take message id and return it
+        # {"messaging_product":"whatsapp","contacts":[{"input":"263777213388","wa_id":"263777213388"}],"messages":[{"id":"wamid.HBgMMjYzNzc3MjEzMzg4FQIAERgSRTYwREI2Q0YzOEQyMzNDMzVBAA=="}]}
+
+        logger.info("---------------------------------------")
+        logger.info(f"WhatsApp Response: {response.status_code}")
+        logger.info("---------------------------------------")
+        logger.info(response.json())
+        logger.info("---------------------------------------")
+        response_data = response.json()
+        if response.status_code == 200:
+            return response_data["messages"][0]["id"]
+        else:
+            return None

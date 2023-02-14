@@ -141,6 +141,32 @@ class InteractiveListMessage:
         }
 
 
+class InteractiveProductButtonsMessage:
+    def __init__(
+        self, text: str, phone_number: str, buttons: List[ReplyButton], message_id: str
+    ):
+        self.text = text
+        self.phone_number = phone_number
+        self.buttons = buttons
+        self.message_id = message_id
+
+    def to_json(self) -> dict:
+        return {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": self.phone_number,
+            "type": "interactive",
+            "context": {"message_id": self.message_id},
+            "interactive": {
+                "type": "button",
+                "body": {"text": self.text},
+                "action": {
+                    "buttons": [button.to_json() for button in self.buttons],
+                },
+            },
+        }
+
+
 class InteractiveButtonMessage:
     def __init__(
         self,

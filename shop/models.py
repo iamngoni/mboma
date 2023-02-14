@@ -1,6 +1,7 @@
 from django.db import models
 
 from mboma.model import SoftDeleteModel
+from users.models import User
 
 
 class ApiRequest(SoftDeleteModel):
@@ -102,3 +103,56 @@ class Order(SoftDeleteModel):
         verbose_name = "Order"
         verbose_name_plural = "Orders"
         table_prefix = "o"
+
+
+class Cart(SoftDeleteModel):
+    user = models.OneToOneField(
+        "users.User",
+        related_name="cart",
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+    )
+
+    class Meta:
+        verbose_name = "Shopping Cart"
+        verbose_name_plural = "Shopping Carts"
+        table_prefix = "shcart"
+
+    @classmethod
+    def create_cart_or_get_cart(cls, user: User):
+        try:
+            return cls.objects.get(user=user)
+        except cls.DoesNotExist:
+            cart = cls(user=user)
+            cart.save()
+            return cart
+
+    def create_cart_item_or_get_cart_item(self, product: Product, quantity: int):
+        try:
+            cart_item = self.items.get(product=product)
+
+        except CartItem.DoesNotExist:
+            pass
+
+
+class CartItem(SoftDeleteModel):
+    cart = models.ForeignKey(
+        "shop.Cart",
+        related_name="items",
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+    )
+    product = models.ForeignKey(
+        "shop.Product",
+        on_delete=models.CASCADE,
+        null=False,
+        blank=False,
+    )
+    quantity = models.IntegerField(default=1, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "Cart Item"
+        verbose_name_plural = "Cart Items"
+        table_prefix = "shcart_itm"
