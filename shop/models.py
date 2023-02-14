@@ -128,12 +128,20 @@ class Cart(SoftDeleteModel):
             cart.save()
             return cart
 
-    def create_cart_item_or_get_cart_item(self, product: Product, quantity: int):
+    def add_cart_item_or_create_cart_item(self, product: Product, quantity: int):
         try:
             cart_item = self.items.get(product=product)
-
+            cart_item.quantity = quantity
+            cart_item.save()
+            return cart_item
         except CartItem.DoesNotExist:
-            pass
+            cart_item = CartItem(
+                cart=self,
+                product=product,
+                quantity=quantity,
+            )
+            cart_item.save()
+            return cart_item
 
 
 class CartItem(SoftDeleteModel):

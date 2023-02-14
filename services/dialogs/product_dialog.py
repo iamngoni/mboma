@@ -11,6 +11,7 @@ from decouple import config
 from loguru import logger
 
 from bot.models import WhatsappSession
+from services.dialogs.product_quantity_dialog import ProductQuantityDialog
 from services.dialogs.whatsapp_dialog import WhatsAppDialog
 from services.dtos.whatsapp_message import WhatsAppMessageDTO
 from services.whatsapp.messages import (
@@ -37,6 +38,8 @@ class ProductDialog(WhatsAppDialog):
         if input_id:
             try:
                 product = Product.objects.get(id=input_id)
+                session.paylod["product_id"] = product.id
+                session.save()
 
                 # send product image
                 image_message = ImageMessage(
@@ -81,8 +84,7 @@ class ProductDialog(WhatsAppDialog):
             option_selected = incoming_message.button_reply.get("id")
 
             if option_selected == "add_to_cart":
-                # todo: add to cart logic -> return dialog to ask for quantity
-                pass
+                return ProductQuantityDialog()
             if option_selected == "back_to_products":
                 # todo: figure out logic to go to previous dialog
                 pass

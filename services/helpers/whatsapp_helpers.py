@@ -12,6 +12,7 @@ from services.dialogs.my_account_dialog import MyAccountDialog
 from services.dialogs.my_orders_dialog import MyOrdersDialog
 from services.dialogs.product_categories_dialog import ProductCategoriesDialog
 from services.dialogs.product_dialog import ProductDialog
+from services.dialogs.product_quantity_dialog import ProductQuantityDialog
 from services.dialogs.products_dialog import ProductsDialog
 from services.dialogs.welcome_dialog import WelcomeDialog
 from services.dtos.whatsapp_message import WhatsAppMessageDTO
@@ -95,6 +96,7 @@ class WhatsAppHelpers:
             "product_categories_dialog": ProductCategoriesDialog(),
             "catalog_products_dialog": CatalogProductsDialog(),
             "product_dialog": ProductDialog(),
+            "product_quantity_dialog": ProductQuantityDialog(),
         }
 
     @staticmethod
