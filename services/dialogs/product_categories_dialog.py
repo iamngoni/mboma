@@ -30,7 +30,7 @@ class ProductCategoriesDialog(WhatsAppDialog):
 
         category_names_concatenated = ""
         for index, category in enumerate(categories):
-            category_names_concatenated += f"*{category.name}*{' and' if index == categories.count() - 2 else ', ' if index < categories.count() - 1 else ''}"
+            category_names_concatenated += f"*{category.name}*{' and ' if index == categories.count() - 2 else ', ' if index < categories.count() - 1 else ''}"
 
         logger.info(category_names_concatenated)
 
