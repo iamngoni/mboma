@@ -62,6 +62,8 @@ class PaymentDialog(WhatsAppDialog):
         )
         logger.info(response)
         if response.success:
+            user.cart.delete()
+
             link = response.redirect_url
             return TextMessage(
                 phone_number=incoming_message.from_phone_number,
