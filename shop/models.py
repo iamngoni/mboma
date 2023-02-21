@@ -100,7 +100,6 @@ class Order(SoftDeleteModel):
     )
     amount = models.FloatField(default=0, blank=False, null=False)
     paid = models.BooleanField(default=False, blank=False, null=False)
-    payment_method = models.CharField(max_length=10, blank=False, null=False)
     narration = models.TextField(blank=False, null=False)
 
     class Meta:
