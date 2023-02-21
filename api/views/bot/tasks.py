@@ -22,12 +22,6 @@ def mark_message_as_read(message_id: str, phone_number: str):
 
         # blue tick
         WhatsappMessage(payload).send()
-
-        # funny reaction
-        WhatsappMessage(
-            ReactionMessage(phone_number=phone_number, message_id=message_id).to_json()
-        ).send()
-
     except Exception as exc:
         logger.error(f"Error marking message as read: {exc}")
 
