@@ -50,7 +50,7 @@ class PaymentDialog(WhatsAppDialog):
         paynow = Paynow(
             config("PAYNOW_ID"),
             config("PAYNOW_KEY"),
-            "https://google.com",
+            "https://modestnerd.co",
             "https://mboma.modestnerd.co/api/1.0/paynow",
         )
         payment = paynow.create_payment(order.id, user.email)
