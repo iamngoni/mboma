@@ -58,16 +58,15 @@ class PaymentDialog(WhatsAppDialog):
         for cart_item in user.cart.items.all():
             payment.add(cart_item.product.name, cart_item.total)
 
-        response = paynow.send_mobile(
+        response = paynow.send(
             payment=payment,
-            phone=session.payload.get("payment_number"),
-            method=session.payload.get("payment_method", "ecocash"),
         )
         logger.info(response)
         if response.success:
+            link = response.redirect_url
             return TextMessage(
                 phone_number=incoming_message.from_phone_number,
-                text="A payment prompt may appear on your phone in 1-5 seconds. If not you may restart the process",
+                text=f"Please use the following link to complete your payment:\n\n{link}",
             )
         else:
             return TextMessage(

@@ -9,7 +9,7 @@ from typing import Optional
 from loguru import logger
 
 from bot.models import WhatsappSession
-from services.dialogs.payment_method_dialog import PaymentMethodDialog
+from services.dialogs.payment_dialog import PaymentDialog
 from services.dialogs.welcome_dialog import WelcomeDialog
 from services.dialogs.whatsapp_dialog import WhatsAppDialog
 from services.dtos.whatsapp_message import WhatsAppMessageDTO
@@ -60,7 +60,7 @@ class ConfirmOrderDialog(WhatsAppDialog):
         logger.info(option_selected)
 
         if option_selected == "confirm":
-            return PaymentMethodDialog()
+            return PaymentDialog()
 
         if option_selected == "cancel":
             return WelcomeDialog()
