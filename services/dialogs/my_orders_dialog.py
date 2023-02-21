@@ -30,7 +30,10 @@ class MyOrdersDialog(WhatsAppDialog):
             if orders.count() > 0:
                 orders_text = ""
                 for index, order in enumerate(orders):
-                    orders_text += f"*Order {index+1}*\nOrder ID: {order.id}\n\n{order.narration}\n\n"
+                    orders_text += (
+                        f"*Order ({order.id})*\n{order.narration}\n*${order.amount}"
+                        f" {'Paid*' if order.paid else 'Not Paid*'}\n-------------------------\n"
+                    )
 
                 return TextMessage(
                     phone_number=incoming_message.from_phone_number,

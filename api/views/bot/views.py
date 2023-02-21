@@ -15,7 +15,7 @@ from services.whatsapp.whatsapp_service import WhatsAppService
 from django.shortcuts import HttpResponse
 from api.views.bot.tasks import send_order_confirmation_text
 
-from shop.models import Order
+from shop.models import Order, OrderStatus
 
 
 class WhatsAppView(APIView):
@@ -83,6 +83,7 @@ class PaynowView(APIView):
 
             if status == "Paid":
                 order.paid = True
+                order.status = OrderStatus.PAID
 
             order.save()
 

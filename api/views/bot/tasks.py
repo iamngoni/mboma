@@ -8,7 +8,7 @@ from rq import Retry
 
 from services.whatsapp.messages import ReactionMessage, TextMessage
 from services.whatsapp.whatsapp_message import WhatsappMessage
-from shop.models import Order
+from shop.models import Order, OrderStatus
 
 
 @job("default", retry=Retry(max=3))
@@ -71,7 +71,7 @@ def continuously_poll_paynow_transaction(order: Order, poll_url: str):
                 order.status = status.status
                 order.paynow_reference = status.paynow_reference
                 order.poll_url = poll_url
-                order.status = status.status
+                order.status = OrderStatus.PAID
                 order.hash = status.hash
                 order.save()
 
