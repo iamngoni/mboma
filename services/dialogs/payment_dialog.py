@@ -17,6 +17,7 @@ from services.dtos.whatsapp_message import WhatsAppMessageDTO
 from services.whatsapp.messages import TextMessage
 from shop.models import Order
 from users.models import User
+from api.views.bot.tasks import continuously_poll_paynow_transaction
 
 
 class PaymentDialog(WhatsAppDialog):
@@ -65,6 +66,9 @@ class PaymentDialog(WhatsAppDialog):
             user.cart.delete()
 
             link = response.redirect_url
+            poll_url = response.poll_url
+            continuously_poll_paynow_transaction.delay(poll_url)
+
             return TextMessage(
                 phone_number=incoming_message.from_phone_number,
                 text=f"Please use the following link to complete your payment:\n\n{link}",
