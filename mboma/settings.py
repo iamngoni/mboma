@@ -208,6 +208,3 @@ CHANNEL_LAYERS = {
         },
     },
 }
-
-logger.add(sys.stdout, colorize=True, level="INFO", backtrace=True, diagnose=True)
-logger.add(sys.stderr, colorize=True, level="ERROR", backtrace=True, diagnose=True)

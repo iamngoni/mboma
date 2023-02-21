@@ -1,7 +1,8 @@
 from django.db import models
 
-from mboma.model import SoftDeleteModel
+from mboma.model import SoftDeleteModel, EnumModel
 from users.models import User
+from django.utils.translation import gettext_lazy as _
 
 
 class ApiRequest(SoftDeleteModel):
@@ -90,6 +91,16 @@ class Discount(SoftDeleteModel):
         return f"Discount - {self.name} - {self.product.name}"
 
 
+class OrderStatus(EnumModel):
+    # 'Paid', 'Created', 'Sent', 'Cancelled', 'Disputed', 'Refunded'
+    PAID = "Paid", _("Paid")
+    CREATED = "Created", _("Created")
+    SENT = "Sent", _("Sent")
+    CANCELLED = "Cancelled", _("Cancelled")
+    DISPUTED = "Disputed", _("Disputed")
+    REFUNDED = "Refunded", _("Refunded")
+
+
 class Order(SoftDeleteModel):
     user = models.ForeignKey(
         "users.User",
@@ -99,8 +110,17 @@ class Order(SoftDeleteModel):
         blank=False,
     )
     amount = models.FloatField(default=0, blank=False, null=False)
+    status = models.CharField(
+        max_length=20,
+        choices=OrderStatus.choices,
+        default=OrderStatus.CREATED,
+        null=False,
+        blank=False,
+    )
     paid = models.BooleanField(default=False, blank=False, null=False)
     narration = models.TextField(blank=False, null=False)
+    paynow_reference = models.CharField(max_length=255, blank=True, null=True)
+    hash = models.CharField(max_length=500, blank=True, null=True)
 
     class Meta:
         verbose_name = "Order"

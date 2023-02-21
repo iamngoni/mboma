@@ -13,6 +13,9 @@ from services.helpers.api_response import api_response
 from services.helpers.whatsapp_helpers import WhatsAppHelpers
 from services.whatsapp.whatsapp_service import WhatsAppService
 from django.shortcuts import HttpResponse
+from api.views.bot.tasks import send_order_confirmation_text
+
+from shop.models import Order
 
 
 class WhatsAppView(APIView):
@@ -57,5 +60,36 @@ class WhatsAppView(APIView):
 class PaynowView(APIView):
     parser_classes = (JSONParser,)
 
-    def post(self, request):
-        pass
+    def post(self, request, *args, **kwargs):
+        """
+        Get the following fields from the paynow request params and update order using reference:
+        reference, amount, paynowreference, pollurl, status['Paid', 'Created', 'Sent', 'Cancelled', 'Disputed', 'Refunded'], hash
+        """
+        # get request query params
+        data = request.query_params
+        reference = data.get("reference")
+        paynow_reference = data.get("paynowreference")
+        poll_url = data.get("pollurl")
+        status = data.get("status")
+        hash = data.get("hash")
+
+        order = Order.get_item_by_id(reference)
+
+        if order:
+            order.paynow_reference = paynow_reference
+            order.poll_url = poll_url
+            order.status = status
+            order.hash = hash
+
+            if status == "Paid":
+                order.paid = True
+
+            order.save()
+
+            if order.paid:
+                # send order confirmation
+                send_order_confirmation_text.delay(order)
+        else:
+            logger.info("Order not found")
+
+        return api_response(request)
