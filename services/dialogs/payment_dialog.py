@@ -67,7 +67,7 @@ class PaymentDialog(WhatsAppDialog):
 
             link = response.redirect_url
             poll_url = response.poll_url
-            continuously_poll_paynow_transaction.delay(poll_url)
+            continuously_poll_paynow_transaction.delay(order, poll_url)
 
             return TextMessage(
                 phone_number=incoming_message.from_phone_number,
