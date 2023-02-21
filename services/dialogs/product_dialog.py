@@ -59,9 +59,6 @@ class ProductDialog(WhatsAppDialog):
                     buttons=[
                         ReplyButton(button_id="add_to_cart", title="🛒Add To Cart"),
                         ReplyButton(
-                            button_id="back_to_products", title="⏪Category Products"
-                        ),
-                        ReplyButton(
                             button_id="back_to_categories", title="⏮️Categories"
                         ),
                     ],
@@ -85,9 +82,7 @@ class ProductDialog(WhatsAppDialog):
 
             if option_selected == "add_to_cart":
                 return ProductQuantityDialog()
-            if option_selected == "back_to_products":
-                # todo: figure out logic to go to previous dialog
-                pass
+
             if option_selected == "back_to_categories":
                 from services.dialogs.product_categories_dialog import (
                     ProductCategoriesDialog,

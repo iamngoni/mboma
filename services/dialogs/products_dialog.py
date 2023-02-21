@@ -7,14 +7,14 @@
 from typing import Optional
 
 from decouple import config
+from loguru import logger
 
 from bot.models import WhatsappSession
 from services.dialogs.whatsapp_dialog import WhatsAppDialog
 from services.dtos.whatsapp_message import WhatsAppMessageDTO
-from services.whatsapp.messages import InteractiveListMessage, ProductsMessage
+from services.whatsapp.messages import ProductsMessage
 from services.whatsapp.product_section import ProductSection
 from shop.models import ProductCategory
-from loguru import logger
 
 
 class ProductsDialog(WhatsAppDialog):

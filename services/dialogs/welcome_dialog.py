@@ -3,16 +3,13 @@
 #  mboma
 #
 #  Created by Ngonidzashe Mangudya on 12/2/2023.
+
 from typing import Optional
 
-from loguru import logger
-
 from bot.models import WhatsappSession
-from services.dialogs.how_it_works_dialog import HowItWorksDialog
-from services.dialogs.my_account_dialog import MyAccountDialog
+from services.dialogs.more_welcome_options_dialog import MoreWelcomeOptionsDialog
 from services.dialogs.my_orders_dialog import MyOrdersDialog
 from services.dialogs.product_categories_dialog import ProductCategoriesDialog
-from services.dialogs.products_dialog import ProductsDialog
 from services.dialogs.whatsapp_dialog import WhatsAppDialog
 from services.dtos.whatsapp_message import WhatsAppMessageDTO
 from services.whatsapp.messages import InteractiveButtonMessage
@@ -39,7 +36,7 @@ class WelcomeDialog(WhatsAppDialog):
                     button_id="start_shopping_on_whatsapp", title="Shop on WhatsApp"
                 ),
                 ReplyButton(button_id="my_orders", title="My Orders"),
-                ReplyButton(button_id="my_account", title="My Account"),
+                ReplyButton(button_id="more", title="More Options"),
             ],
         )
 
@@ -60,8 +57,5 @@ class WelcomeDialog(WhatsAppDialog):
             if option_selected == "my_orders":
                 return MyOrdersDialog()
 
-            if option_selected == "my_account":
-                return MyAccountDialog()
-
-            if option_selected == "how_it_works":
-                return HowItWorksDialog()
+            if option_selected == "more":
+                return MoreWelcomeOptionsDialog()

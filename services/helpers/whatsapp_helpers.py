@@ -11,6 +11,7 @@ from services.dialogs.first_name_dialog import FirstNameDialog
 from services.dialogs.go_to_checkout_dialog import GoToCheckoutDialog
 from services.dialogs.how_it_works_dialog import HowItWorksDialog
 from services.dialogs.last_name_dialog import LastNameDialog
+from services.dialogs.more_welcome_options_dialog import MoreWelcomeOptionsDialog
 from services.dialogs.my_account_dialog import MyAccountDialog
 from services.dialogs.my_orders_dialog import MyOrdersDialog
 from services.dialogs.payment_dialog import PaymentDialog
@@ -90,6 +91,7 @@ class WhatsAppHelpers:
     def available_dialogs() -> dict:
         return {
             "welcome_dialog": WelcomeDialog(),
+            "more_welcome_options_dialog": MoreWelcomeOptionsDialog(),
             "how_it_works_dialog": HowItWorksDialog(),
             "products_dialog": ProductsDialog(),
             "my_account_dialog": MyAccountDialog(),
@@ -117,6 +119,5 @@ class WhatsAppHelpers:
                 return previous_dialog
             except KeyError:
                 logger.error(
-                    "Requested dialog %s not registered in the dialog registry",
-                    previous_dialog,
+                    f"Requested dialog {previous_dialog} not registered in the dialog registry",
                 )

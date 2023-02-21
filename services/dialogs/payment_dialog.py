@@ -43,7 +43,6 @@ class PaymentDialog(WhatsAppDialog):
         order = Order(
             user=user,
             amount=user.cart.total,
-            payment_method=session.payload.get("payment_method", "ecocash"),
             narration=narration,
         )
         order.save()
