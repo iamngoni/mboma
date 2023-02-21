@@ -12,7 +12,7 @@ from shop.models import Order
 
 
 @job("default", retry=Retry(max=3))
-def mark_message_as_read(message_id: str, phone_number: str):
+def mark_message_as_read(message_id: str):
     try:
         payload = {
             "messaging_product": "whatsapp",

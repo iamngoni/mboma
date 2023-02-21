@@ -35,7 +35,6 @@ class WhatsAppService:
             logger.info("scheduling job to mark message as read")
             mark_message_as_read.delay(
                 self.incoming_whatsapp_message.id,
-                self.incoming_whatsapp_message.from_phone_number,
             )
             logger.info("job scheduled")
 
