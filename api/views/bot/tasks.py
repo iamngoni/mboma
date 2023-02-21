@@ -72,6 +72,7 @@ def continuously_poll_paynow_transaction(order: Order, poll_url: str):
                 order.paynow_reference = status.paynow_reference
                 order.poll_url = poll_url
                 order.status = OrderStatus.PAID
+                order.paid = True
                 order.hash = status.hash
                 order.save()
 
